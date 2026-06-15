@@ -1,4 +1,5 @@
 using FinalProject_Store.Application.Interfaces.Contexts;
+using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
 using FinalProject_Store.Application.Services.Users.Queries.GetRoles;
 using FinalProject_Store.Application.Services.Users.Queries.GetUsers;
 using FinalProject_Store.Persistence.Contexts;
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<DataBaseContext>(options =>
 builder.Services.AddScoped<IDataBaseContext>(provider => provider.GetRequiredService<DataBaseContext>());
 builder.Services.AddScoped<IGetUsersService, GetUsersService>();
 builder.Services.AddScoped<IGetRolesService, GetRolesService>();
+builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
 
 
 var app = builder.Build();
