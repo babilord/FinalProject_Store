@@ -130,26 +130,26 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
                     Message = "ثبت نام کاربر انجام شد",
                 };
             }
-            catch (Exception ex)
-            {
-                return new ResultDto<ResultRegisterUserDto>()
-                {
-                    IsSuccess = false,
-                    Message = ex.ToString()
-                };
-            }
-            //catch (Exception)
+            //catch (Exception ex)
             //{
             //    return new ResultDto<ResultRegisterUserDto>()
             //    {
-            //        Data = new ResultRegisterUserDto()
-            //        {
-            //            UserId = 0,
-            //        },
             //        IsSuccess = false,
-            //        Message = "ثبت نام انجام نشد !"
+            //        Message = ex.ToString()
             //    };
             //}
+            catch (Exception)
+            {
+                return new ResultDto<ResultRegisterUserDto>()
+                {
+                    Data = new ResultRegisterUserDto()
+                    {
+                        UserId = 0,
+                    },
+                    IsSuccess = false,
+                    Message = "ثبت نام انجام نشد !"
+                };
+            }
         }
     }
     public class RequestRegisterUserDto
