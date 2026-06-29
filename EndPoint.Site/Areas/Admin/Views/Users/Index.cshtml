@@ -58,13 +58,13 @@
 </div>
 @section Scripts
 {
-    <link href ="~/Sweetalert2/sweetalert2.min.css" rel="sylesheet" />
+    <link href ="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
 
     <script>
         function DeleteUser(UserId){
-            swal.fire({
+            Swal.fire({
                 title:'حذف کاربر',
                 text: "کاربر گرامی از حذف کاربر مطمئن هستید؟",
                 icon: 'warning',
@@ -82,7 +82,7 @@
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
-                        url: "Delete",
+                        url: "/Admin/Users/Delete",
                         data: postData,
                         success: function (data){
                             if (data.isSuccess == true){

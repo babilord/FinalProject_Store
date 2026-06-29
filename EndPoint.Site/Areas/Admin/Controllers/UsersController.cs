@@ -22,13 +22,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         //private readonly IEdituserService _edituserService;
         public UsersController(IGetUsersService getUsersService
                              , IGetRolesService getRolesService
-                             , IRegisterUserService registerUserService ) //,
+                             , IRegisterUserService registerUserService
+                             , IRemoveUserService removeUserService
+                                                                        ) //,
                             //IUserStatusChangeService userStatusChangeService,
                             //IEdituserService edituserService)
         {
             _getUsersService = getUsersService;
             _getRolesService = getRolesService;
             _registerUserService = registerUserService;
+            _removeUserService = removeUserService;
             //_userStatusChangeService = userStatusChangeService;
             //_edituserService = edituserService;
         }

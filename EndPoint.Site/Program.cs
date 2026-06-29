@@ -1,5 +1,6 @@
 using FinalProject_Store.Application.Interfaces.Contexts;
 using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
+using FinalProject_Store.Application.Services.Users.Commands.RemoveUser;
 using FinalProject_Store.Application.Services.Users.Queries.GetRoles;
 using FinalProject_Store.Application.Services.Users.Queries.GetUsers;
 using FinalProject_Store.Persistence.Contexts;
@@ -15,6 +16,7 @@ builder.Services.AddScoped<IDataBaseContext>(provider => provider.GetRequiredSer
 builder.Services.AddScoped<IGetUsersService, GetUsersService>();
 builder.Services.AddScoped<IGetRolesService, GetRolesService>();
 builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
+builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
 
 
 var app = builder.Build();
