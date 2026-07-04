@@ -38,7 +38,6 @@ namespace FinalProject_Store.Persistence.Contexts
             //اعمال ایندکس بر روی فیلد ایمیل
             // اعمال عدم تکراری بودن ایمیل
             modelBuilder.Entity<User>().HasIndex(u=>u.Email).IsUnique();
-
             // فقط یوزرهایی رو برگردون که حذف نشده باشند یعنی IsRemoved = false
             modelBuilder.Entity<User>().HasQueryFilter(u=>!u.IsRemoved);
         }

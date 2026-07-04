@@ -21,14 +21,49 @@
                             <div class="card-block card-dashboard">
                                 <p class="card-text">داده های جداول اغلب ویژگی های پیش فرض را فعال می کنند، بنابراین همه چیزهایی که باید برای استفاده از آن با استفاده از ables خود انجام دهید، تماس با تابع ساخت است: $ (). DataTable ()؛</p>
                                 <div id="DataTables_Table_0_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
-                                    <div class="row"><div class="col-sm-12 col-md-6"><div class="dataTables_length" id="DataTables_Table_0_length"><label>نمایش <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-control form-control-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> سطر</label></div></div><div class="col-sm-12 col-md-6"><div id="DataTables_Table_0_filter" class="dataTables_filter"><label>جستجو:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="DataTables_Table_0"></label></div></div></div><div class="row">
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6">
+                                            <div class="dataTables_length" id="DataTables_Table_0_length">
+                                                <label>نمایش <select name="DataTables_Table_0_length" aria-controls="DataTables_Table_0" class="form-control form-control-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> سطر</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-12 col-md-6">
+                                            <div id="DataTables_Table_0_filter" class="dataTables_filter">
+                                                <form method="get"
+                                                      asp-area="Admin"
+                                                      asp-controller="Users"
+                                                      asp-action="Index"
+                                                      class="d-flex align-items-center justify-content-md-end"
+                                                      style="gap: 6px;">
+
+                                                    <label class="mb-0">جستجو:</label>
+
+                                                    <input type="search"
+                                                           name="searchKey"
+                                                           class="form-control form-control-sm"
+                                                           value="@Context.Request.Query["searchKey"]"
+                                                           placeholder="نام یا ایمیل کاربر"
+                                                           style="width: 180px;" />
+
+                                                    <button type="submit" class="btn btn-info btn-sm">
+                                                        جستجو
+                                                    </button>
+
+                                                    <a href="/Admin/Users/Index" class="btn btn-secondary btn-sm">
+                                                        نمایش همه
+                                                    </a>
+                                                </form>
+                                            </div>
+                                        </div>
+
+                                    </div><div class="row">
                                         <div class="col-sm-12">
                                             <table class="table table-striped table-bordered zero-configuration dataTable" id="DataTables_Table_0" role="grid" aria-describedby="DataTables_Table_0_info">
                                                 <thead>
                                                     <tr role="row">
                                                         <th class="sorting_asc" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-sort="ascending" aria-label="نام: activate to sort column descending" style="width: 157.2px;">نام</th>
                                                         <th class="sorting" tabindex="0" aria-controls="DataTables_Table_0" rowspan="1" colspan="1" aria-label="موقعیت: activate to sort column ascending" style="width: 293.25px;">ایمیل</th>
-                                                    </tr>   
+                                                    </tr>
                                                 </thead>
                                                 <tbody>
                                                     @foreach (var item in Model.Users)
@@ -37,9 +72,27 @@
                                                             <td class="sorting_1">@item.FullName</td>
                                                             <td>@item.Email</td>
                                                             <td>
-                                                                <button class="btn btn-info" onclick="ShowModalEdituser('@item.Id', '@item.FullName')">ویرایش</button>
-                                                                <button class="btn btn-danger" onclick="DeleteUser('@item.Id')">حذف</button>
-                                                                <button class="btn btn-warning" onclick="UserStatusChange('@item.Id')">غیرفعال</button>
+                                                                <button class="btn btn-info"
+                                                                        onclick="ShowModalEdituser('@item.Id', '@item.FullName', '@item.Email')">
+                                                                    ویرایش
+                                                                </button>
+
+                                                                <button class="btn btn-danger" onclick="DeleteUser('@item.Id')">
+                                                                    حذف
+                                                                </button>
+
+                                                                @if (item.isActive)
+                                                                {
+                                                                    <button type="button" class="btn btn-warning" onclick="UserStatusChange(@item.Id)">
+                                                                        غیرفعال
+                                                                    </button>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <button type="button" class="btn btn-success" onclick="UserStatusChange(@item.Id)">
+                                                                        فعال
+                                                                    </button>
+                                                                }
                                                             </td>
                                                         </tr>
                                                     }
@@ -56,55 +109,156 @@
         </section>
     </div>
 </div>
+
+<style>
+    .modal-backdrop {
+        z-index: 99998 !important;
+    }
+
+    #EditUserModal {
+        z-index: 99999 !important;
+    }
+</style>
+@section Modals
+{
+    <div class="modal fade show" id="EditUserModal" tabindex="-1" role="dialog" aria-labelledby="EditUserModalLabel"
+         aria-hidden="true" style="display:none; z-index:99999;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title" id="EditUserModalLabel">ویرایش کاربر</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="Edit_UserId" />
+                    <div class="form-group">
+                        <label>نام و نام خانوادگی</label>
+                        <input type="text" class="form-control" id="Edit_FullName" />
+                    </div>
+                    <div class="form-group">
+                        <label>ایمیل</label>
+                        <input type="text" class="form-control" id="Edit_Email" />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">بستن</button>
+                    <button type="button" class="btn btn-success" onclick="EditUser()">ذخیره تغییرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 @section Scripts
 {
-    <link href ="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
-
     <script>
-        function DeleteUser(UserId){
+        function DeleteUser(UserId) {
             Swal.fire({
-                title:'حذف کاربر',
+                title: 'حذف کاربر',
                 text: "کاربر گرامی از حذف کاربر مطمئن هستید؟",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
-                cancelButtonColor:'#7cacbe',
+                cancelButtonColor: '#7cacbe',
                 confirmButtonText: 'بله، کاربر حذف شود',
                 cancelButtonText: 'خیر'
             }).then((result) => {
-                if (result.value){
-                    var postData = {
-                        'UserId': UserId,
-                    };
+                if (result.isConfirmed) {
                     $.ajax({
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
                         type: "POST",
                         url: "/Admin/Users/Delete",
-                        data: postData,
-                        success: function (data){
-                            if (data.isSuccess == true){
-                                swal.fire(
+                        data: {
+                            UserId: UserId
+                        },
+                        success: function (data) {
+                            if (data.isSuccess == true) {
+                                Swal.fire(
                                     'موفق!',
                                     data.message,
                                     'success'
-                                ).then(function (isConfirm){
+                                ).then(function () {
                                     location.reload();
                                 });
                             }
-                            else{
-                                swal.fire(
+                            else {
+                                Swal.fire(
                                     'هشدار!',
                                     data.message,
-
-                                )
+                                    'warning'
+                                );
                             }
+                        },
+                        error: function (request) {
+                            alert(request.responseText);
                         }
-                    })
+                    });
                 }
-            })
+            });
+        }
+
+        function UserStatusChange(UserId) {
+            $.ajax({
+                type: "POST",
+                url: "/Admin/Users/UserStatusChange",
+                data: {
+                    UserId: UserId
+                },
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        location.reload();
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                },
+                error: function (request) {
+                    alert(request.responseText);
+                }
+            });
+        }
+
+        function ShowModalEdituser(userId, fullName, email) {
+            $("#Edit_UserId").val(userId);
+            $("#Edit_FullName").val(fullName);
+            $("#Edit_Email").val(email);
+
+            $("#EditUserModal").appendTo("body").modal("show");
+        }
+
+        function EditUser() {
+            var userId = $("#Edit_UserId").val();
+            var fullName = $("#Edit_FullName").val();
+            var email = $("#Edit_Email").val();
+            $.ajax({
+                contentType: 'application/x-www-form-urlencoded',
+                dataType: 'json',
+                type: "POST",
+                url: "/Admin/Users/Edit",
+                data: {
+                    UserId: userId,
+                    FullName: fullName,
+                    Email: email
+                },
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        $("#EditUserModal").modal("hide");
+                        location.reload();
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                },
+                error: function (request) {
+                    alert(request.responseText);
+                }
+            });
         }
     </script>
 }

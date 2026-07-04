@@ -1,4 +1,8 @@
-﻿using FinalProject_Store.Application.Services.Users.Queries.GetRoles;
+﻿using FinalProject_Store.Application.Services.Users.Commands.EditUser;
+using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
+using FinalProject_Store.Application.Services.Users.Commands.RemoveUser;
+using FinalProject_Store.Application.Services.Users.Commands.UserStatusChange;
+using FinalProject_Store.Application.Services.Users.Queries.GetRoles;
 using FinalProject_Store.Application.Services.Users.Queries.GetUsers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,8 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
-using FinalProject_Store.Application.Services.Users.Commands.RemoveUser;
 //
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -18,29 +20,28 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         private readonly IGetRolesService _getRolesService;
         private readonly IRegisterUserService _registerUserService;
         private readonly IRemoveUserService _removeUserService;
-        //private readonly IUserStatusChangeService _userStatusChangeService;
-        //private readonly IEdituserService _edituserService;
+        private readonly IUserStatusChangeService _userStatusChangeService;
+        private readonly IEditUserService _editUserService;
         public UsersController(IGetUsersService getUsersService
                              , IGetRolesService getRolesService
                              , IRegisterUserService registerUserService
                              , IRemoveUserService removeUserService
-                                                                        ) //,
-                            //IUserStatusChangeService userStatusChangeService,
-                            //IEdituserService edituserService)
+                             , IUserStatusChangeService userStatusChangeService
+                             , IEditUserService edituserService)
         {
             _getUsersService = getUsersService;
             _getRolesService = getRolesService;
             _registerUserService = registerUserService;
             _removeUserService = removeUserService;
-            //_userStatusChangeService = userStatusChangeService;
-            //_edituserService = edituserService;
+            _userStatusChangeService = userStatusChangeService;
+            _editUserService = edituserService;
         }
-        public IActionResult Index(string serchkey, int page = 1)
+        public IActionResult Index(string searchkey, int page = 1)
         {
             return View(_getUsersService.Execute(new RequestGetUserDto
             {
                 Page = page,
-                SearchKey = serchkey,
+                SearchKey = searchkey,
             }));
         }
         [HttpGet]
@@ -78,5 +79,23 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             return Json(_removeUserService.Execute(UserId));
         }
 
+        [HttpPost]
+        public IActionResult UserStatusChange(long UserId)
+        {
+            return Json(_userStatusChangeService.Execute(UserId));
+        }
+
+        [HttpPost]
+        public IActionResult Edit(long UserId, string FullName, string Email)
+        {
+            var result = _editUserService.Execute(new RequestEditUserDto
+            {
+                UserId = UserId,
+                FullName = FullName,
+                Email = Email
+            });
+
+            return Json(result);
+        }
     }
 }

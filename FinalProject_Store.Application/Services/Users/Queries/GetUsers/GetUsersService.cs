@@ -15,7 +15,7 @@ namespace FinalProject_Store.Application.Services.Users.Queries.GetUsers
             var users = _context.Users.AsQueryable();
             if (!string.IsNullOrWhiteSpace(request.SearchKey))  
             {
-                users = users.Where (p=>p.FullName.Contains(request.SearchKey) &&
+                users = users.Where (p=>p.FullName.Contains(request.SearchKey) ||
                                     p.Email.Contains(request.SearchKey));
             }       
             int rowsCount = 0;
@@ -24,6 +24,7 @@ namespace FinalProject_Store.Application.Services.Users.Queries.GetUsers
                 Email = p.Email,
                 FullName = p.FullName,
                 Id = p.Id,
+                isActive = p.isActive
             }).ToList();
             return new ResultGetUserDto
             {

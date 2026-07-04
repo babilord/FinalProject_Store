@@ -1,6 +1,8 @@
 using FinalProject_Store.Application.Interfaces.Contexts;
+using FinalProject_Store.Application.Services.Users.Commands.EditUser;
 using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
 using FinalProject_Store.Application.Services.Users.Commands.RemoveUser;
+using FinalProject_Store.Application.Services.Users.Commands.UserStatusChange;
 using FinalProject_Store.Application.Services.Users.Queries.GetRoles;
 using FinalProject_Store.Application.Services.Users.Queries.GetUsers;
 using FinalProject_Store.Persistence.Contexts;
@@ -17,7 +19,8 @@ builder.Services.AddScoped<IGetUsersService, GetUsersService>();
 builder.Services.AddScoped<IGetRolesService, GetRolesService>();
 builder.Services.AddScoped<IRegisterUserService, RegisterUserService>();
 builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
-
+builder.Services.AddScoped<IUserStatusChangeService, UserStatusChangeService>();
+builder.Services.AddScoped<IEditUserService, EditUserService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
