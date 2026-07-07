@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "ورود";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>ورود</h2>
+
+<input type="hidden" id="ReturnUrl" value="@ViewBag.ReturnUrl" />
+
+<div class="form-group">
+    <label>ایمیل</label>
+    <input type="text" id="Email" class="form-control" />
+</div>
+
+<div class="form-group">
+    <label>رمز عبور</label>
+    <input type="password" id="Password" class="form-control" />
+</div>
+
+<button class="btn btn-primary" onclick="LoginUser()">ورود</button>
+
+@section Scripts
+{
+    <script>
+        function LoginUser() {
+            $.ajax({
+                type: "POST",
+                url: "/Authentication/Login",
+                data: {
+                    Email: $("#Email").val(),
+                    Password: $("#Password").val(),
+                    returnUrl: $("#ReturnUrl").val()
+                },
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        window.location.href = data.redirectUrl;
+                    }
+                    else {
+                        alert(data.message);
+                    }
+                },
+                error: function (request) {
+                    alert(request.responseText);
+                }
+            });
+        }
+    </script>
+}

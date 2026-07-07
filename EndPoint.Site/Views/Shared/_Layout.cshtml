@@ -1413,7 +1413,6 @@
     </div>
     <!-- Page Loader----------------------------->
 
-</body>
 <!-- file js---------------------------------------------------->
 <script src="~/site template/assets/js/vendor/jquery-3.2.1.min.js"></script>
 <script src="~/site template/assets/js/vendor/bootstrap.js"></script>
@@ -1425,5 +1424,8 @@
 <script src="~/site template/assets/js/vendor/sweetalert2.all.min.js"></script>
 <!-- main js---------------------------------------------------->
 <script src="~/site template/assets/js/main.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+
+</body>
 
 </html>

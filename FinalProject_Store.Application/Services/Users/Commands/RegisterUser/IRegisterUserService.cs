@@ -79,12 +79,28 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
                     };
                 }
 
+                var userExists = _context.Users.Any(p => p.Email == request.Email);
+
+                if (userExists)
+                {
+                    return new ResultDto<ResultRegisterUserDto>()
+                    {
+                        Data = new ResultRegisterUserDto()
+                        {
+                            UserId = 0,
+                        },
+                        IsSuccess = false,
+                        Message = "این ایمیل قبلاً ثبت شده است"
+                    };
+                }
+
                 User user = new User()
                 {
                     Email = request.Email,
                     FullName = request.FullName,
                     Password = request.Password,
                     // Password = HashPassword.Execute(request.Password),
+                    isActive = true
                 };
 
                 List<UserInRole> userInRoles = new List<UserInRole>();

@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "ثبت نام";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<main class="main-content">
+    <div class="container">
+        <div class="row justify-content-center mt-5 mb-5">
+            <div class="col-lg-5 col-md-7 col-sm-12">
+                <div class="card p-4 shadow-sm">
+                    <h3 class="text-center mb-4">ثبت نام</h3>
+
+                    <div class="form-group">
+                        <label>نام و نام خانوادگی</label>
+                        <input type="text" id="FullName" class="form-control" placeholder="نام و نام خانوادگی" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>ایمیل</label>
+                        <input type="text" id="Email" class="form-control" placeholder="example@email.com" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>رمز عبور</label>
+                        <input type="password" id="Password" class="form-control" placeholder="رمز عبور" />
+                    </div>
+
+                    <div class="form-group">
+                        <label>تکرار رمز عبور</label>
+                        <input type="password" id="RePassword" class="form-control" placeholder="تکرار رمز عبور" />
+                    </div>
+
+                    <button class="btn btn-success btn-block mt-3" onclick="RegisterUser()">
+                        ثبت نام
+                    </button>
+
+                    <div class="text-center mt-3">
+                        <a href="/Authentication/Login">قبلاً ثبت نام کرده‌اید؟ ورود</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+@section Scripts
+{
+    <script>
+                function RegisterUser() {
+            $.ajax({
+                type: "POST",
+                url: "/Authentication/Register",
+                data: {
+                    FullName: $("#FullName").val(),
+                    Email: $("#Email").val(),
+                    Password: $("#Password").val(),
+                    RePassword: $("#RePassword").val()
+                },
+                success: function (data) {
+                    if (data.isSuccess == true) {
+                        Swal.fire(
+                            'موفق!',
+                            data.message,
+                            'success'
+                        ).then(function () {
+                            window.location.href = "/Authentication/Login";
+                        });
+                    }
+                    else {
+                        Swal.fire(
+                            'هشدار!',
+                            data.message,
+                            'warning'
+                        );
+                    }
+                },
+                error: function (request) {
+                    Swal.fire(
+                        'خطا!',
+                        request.responseText,
+                        'error'
+                    );
+                }
+            });
+        }
+    </script>
+}
