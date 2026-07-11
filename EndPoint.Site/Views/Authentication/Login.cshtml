@@ -1,48 +1,179 @@
 ﻿@{
-    ViewData["Title"] = "ورود";
+    ViewData["Title"] = "ورود به حساب کاربری";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>ورود</h2>
+<main class="main-content">
+    <div class="container">
+        <div class="row justify-content-center mt-5 mb-5">
+            <div class="col-lg-5 col-md-7 col-sm-10 col-12">
 
-<input type="hidden" id="ReturnUrl" value="@ViewBag.ReturnUrl" />
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-4">
 
-<div class="form-group">
-    <label>ایمیل</label>
-    <input type="text" id="Email" class="form-control" />
-</div>
+                        <div class="text-center mb-4">
+                            <h3 class="mb-2">ورود به حساب کاربری</h3>
+                            <p class="text-muted mb-0">
+                                ایمیل و رمز عبور خود را وارد کنید
+                            </p>
+                        </div>
 
-<div class="form-group">
-    <label>رمز عبور</label>
-    <input type="password" id="Password" class="form-control" />
-</div>
+                        <input type="hidden"
+                               id="ReturnUrl"
+                               value="@ViewBag.ReturnUrl" />
 
-<button class="btn btn-primary" onclick="LoginUser()">ورود</button>
+                        <div class="form-group">
+                            <label for="Email">ایمیل</label>
+
+                            <input type="email"
+                                   id="Email"
+                                   class="form-control"
+                                   placeholder="example@email.com"
+                                   autocomplete="email" />
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Password">رمز عبور</label>
+
+                            <input type="password"
+                                   id="Password"
+                                   class="form-control"
+                                   placeholder="رمز عبور"
+                                   autocomplete="current-password" />
+                        </div>
+
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                            <div>
+                                <input type="checkbox"
+                                       id="RememberMe"
+                                       checked />
+
+                                <label for="RememberMe" class="mb-0 mr-1">
+                                    مرا به خاطر بسپار
+                                </label>
+                            </div>
+
+                            <a href="#" class="text-info">
+                                فراموشی رمز عبور
+                            </a>
+                        </div>
+
+                        <button type="button"
+                                id="LoginButton"
+                                class="btn btn-primary btn-block mt-3"
+                                onclick="LoginUser()">
+                            ورود
+                        </button>
+
+                        <div class="text-center mt-4">
+                            <span class="text-muted">
+                                هنوز حساب کاربری ندارید؟
+                            </span>
+
+                            <a href="/Authentication/Register"
+                               class="text-success font-weight-bold">
+                                ثبت‌نام کنید
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</main>
 
 @section Scripts
 {
     <script>
         function LoginUser() {
+            var email = $("#Email").val().trim();
+            var password = $("#Password").val();
+            var rememberMe = $("#RememberMe").is(":checked");
+            var returnUrl = $("#ReturnUrl").val();
+
+            if (email === "") {
+                Swal.fire(
+                    "هشدار!",
+                    "ایمیل را وارد نمایید",
+                    "warning"
+                );
+
+                return;
+            }
+
+            if (password === "") {
+                Swal.fire(
+                    "هشدار!",
+                    "رمز عبور را وارد نمایید",
+                    "warning"
+                );
+
+                return;
+            }
+
+            var loginButton = $("#LoginButton");
+
+            loginButton
+                .prop("disabled", true)
+                .text("در حال ورود...");
+
             $.ajax({
                 type: "POST",
                 url: "/Authentication/Login",
+
                 data: {
-                    Email: $("#Email").val(),
-                    Password: $("#Password").val(),
-                    returnUrl: $("#ReturnUrl").val()
+                    Email: email,
+                    Password: password,
+                    RememberMe: rememberMe,
+                    returnUrl: returnUrl
                 },
+
                 success: function (data) {
-                    if (data.isSuccess == true) {
-                        window.location.href = data.redirectUrl;
+                    if (data.isSuccess === true) {
+                        Swal.fire({
+                            title: "موفق!",
+                            text: data.message,
+                            icon: "success",
+                            timer: 1200,
+                            showConfirmButton: false
+                        }).then(function () {
+                            window.location.href =
+                                data.redirectUrl || "/";
+                        });
                     }
                     else {
-                        alert(data.message);
+                        Swal.fire(
+                            "هشدار!",
+                            data.message,
+                            "warning"
+                        );
+
+                        loginButton
+                            .prop("disabled", false)
+                            .text("ورود");
                     }
                 },
-                error: function (request) {
-                    alert(request.responseText);
+
+                error: function () {
+                    Swal.fire(
+                        "خطا!",
+                        "در برقراری ارتباط با سرور مشکلی رخ داد",
+                        "error"
+                    );
+
+                    loginButton
+                        .prop("disabled", false)
+                        .text("ورود");
                 }
             });
         }
+
+        $("#Password").on("keypress", function (event) {
+            if (event.key === "Enter") {
+                LoginUser();
+            }
+        });
     </script>
 }

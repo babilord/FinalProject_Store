@@ -131,26 +131,70 @@
                             <div class="d-block">
                                 <div class="account-box">
                                     <div class="nav-account d-block pl">
+
                                         <span class="icon-account">
-                                            <img src="~/site template/assets/images/man.png" class="avator">
+                                            <img src="~/site template/assets/images/man.png"
+                                                 class="avator"
+                                                 alt="حساب کاربری">
                                         </span>
-                                        <span class="title-account">حساب کاربری</span>
+
+                                        @if (User.Identity?.IsAuthenticated == true)
+                                        {
+                                            <span class="title-account">
+                                                @User.Identity.Name
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="title-account">
+                                                حساب کاربری
+                                            </span>
+                                        }
+
                                         <div class="dropdown-menu">
                                             <ul class="account-uls mb-0">
-                                                <li class="account-item">
-                                                    <a href="#" class="account-link">پنل کاربری</a>
-                                                </li>
-                                                <li class="account-item">
-                                                    <a href="#" class="account-link">سفارشات من</a>
-                                                </li>
-                                                <li class="account-item">
-                                                    <a href="#" class="account-link">تنظیمات</a>
-                                                </li>
-                                                <li class="account-item">
-                                                    <a href="#" class="account-link">خروج</a>
-                                                </li>
+
+                                                @if (User.Identity?.IsAuthenticated == true)
+                                                {
+                                                    <li class="account-item">
+                                                        <a href="#" class="account-link">
+                                                            پنل کاربری
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="account-item">
+                                                        <a href="#" class="account-link">
+                                                            سفارشات من
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="account-item">
+                                                        <a href="/Authentication/Logout"
+                                                           class="account-link">
+                                                            خروج
+                                                        </a>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li class="account-item">
+                                                        <a href="/Authentication/Login"
+                                                           class="account-link">
+                                                            ورود
+                                                        </a>
+                                                    </li>
+
+                                                    <li class="account-item">
+                                                        <a href="/Authentication/Register"
+                                                           class="account-link">
+                                                            ثبت نام
+                                                        </a>
+                                                    </li>
+                                                }
+
                                             </ul>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>

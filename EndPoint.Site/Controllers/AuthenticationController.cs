@@ -50,12 +50,22 @@ namespace EndPoint.Site.Controllers
         [HttpGet]
         public IActionResult Login(string returnUrl = "/")
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.ReturnUrl = returnUrl;
+
             return View();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Login(string Email, string Password, string returnUrl = "/")
+        public async Task<IActionResult> Login(
+    string Email,
+    string Password,
+    bool RememberMe,
+    string returnUrl = "/")
         {
             var result = _userLoginService.Execute(new RequestUserLoginDto
             {
@@ -69,11 +79,19 @@ namespace EndPoint.Site.Controllers
             }
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, result.Data.UserId.ToString()),
-                new Claim(ClaimTypes.Name, result.Data.FullName),
-                new Claim(ClaimTypes.Email, result.Data.Email)
-            };
+    {
+        new Claim(
+            ClaimTypes.NameIdentifier,
+            result.Data.UserId.ToString()),
+
+        new Claim(
+            ClaimTypes.Name,
+            result.Data.FullName),
+
+        new Claim(
+            ClaimTypes.Email,
+            result.Data.Email)
+    };
 
             var identity = new ClaimsIdentity(
                 claims,
@@ -81,14 +99,27 @@ namespace EndPoint.Site.Controllers
 
             var principal = new ClaimsPrincipal(identity);
 
+            var authenticationProperties = new AuthenticationProperties
+            {
+                IsPersistent = RememberMe
+            };
+
+            if (RememberMe)
+            {
+                authenticationProperties.ExpiresUtc =
+                    DateTimeOffset.UtcNow.AddDays(30);
+            }
+
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
                 principal,
-                new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
-                });
+                authenticationProperties);
+
+            if (string.IsNullOrWhiteSpace(returnUrl) ||
+                !Url.IsLocalUrl(returnUrl))
+            {
+                returnUrl = "/";
+            }
 
             return Json(new
             {
@@ -98,6 +129,7 @@ namespace EndPoint.Site.Controllers
             });
         }
 
+        [HttpGet]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
