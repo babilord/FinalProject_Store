@@ -67,11 +67,12 @@ namespace EndPoint.Site.Controllers
     bool RememberMe,
     string returnUrl = "/")
         {
-            var result = _userLoginService.Execute(new RequestUserLoginDto
-            {
-                Email = Email,
-                Password = Password
-            });
+            var result = _userLoginService.Execute(
+                new RequestUserLoginDto
+                {
+                    Email = Email,
+                    Password = Password
+                });
 
             if (!result.IsSuccess)
             {
@@ -93,16 +94,23 @@ namespace EndPoint.Site.Controllers
             result.Data.Email)
     };
 
+            foreach (var role in result.Data.Roles)
+            {
+                claims.Add(
+                    new Claim(ClaimTypes.Role, role));
+            }
+
             var identity = new ClaimsIdentity(
                 claims,
                 CookieAuthenticationDefaults.AuthenticationScheme);
 
             var principal = new ClaimsPrincipal(identity);
 
-            var authenticationProperties = new AuthenticationProperties
-            {
-                IsPersistent = RememberMe
-            };
+            var authenticationProperties =
+                new AuthenticationProperties
+                {
+                    IsPersistent = RememberMe
+                };
 
             if (RememberMe)
             {

@@ -72,7 +72,6 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
             else
             {
                 // پشتیبانی موقت از کاربران قدیمی
-                // که رمز آن‌ها به‌صورت خام ذخیره شده است.
                 passwordIsValid =
                     user.Password == request.Password;
 
@@ -106,6 +105,26 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
                 };
             }
 
+            //  دریافت نقش‌های کاربر برای کوکی ها
+            var roleNames = (
+                from userInRole in _context.UserInRoles
+                join role in _context.Roles
+                    on userInRole.RoleId equals role.Id
+                where userInRole.UserId == user.Id
+                select role.Name
+            )
+            .Distinct()
+            .ToList();
+
+            if (!roleNames.Any())
+            {
+                return new ResultDto<ResultUserLoginDto>
+                {
+                    IsSuccess = false,
+                    Message = "برای این کاربر هیچ نقشی تعیین نشده است"
+                };
+            }
+
             return new ResultDto<ResultUserLoginDto>
             {
                 IsSuccess = true,
@@ -115,7 +134,8 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
                 {
                     UserId = user.Id,
                     FullName = user.FullName,
-                    Email = user.Email
+                    Email = user.Email,
+                    Roles = roleNames
                 }
             };
         }
@@ -132,5 +152,7 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
         public long UserId { get; set; }
         public string FullName { get; set; }
         public string Email { get; set; }
+
+        public List<string> Roles { get; set; } = new();
     }
 }

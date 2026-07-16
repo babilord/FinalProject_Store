@@ -77,7 +77,9 @@
                                                                     ویرایش
                                                                 </button>
 
-                                                                <button class="btn btn-danger" onclick="DeleteUser('@item.Id')">
+                                                                <button type="button"
+                                                                        class="btn btn-danger"
+                                                                        onclick="DeleteUser(@item.Id)">
                                                                     حذف
                                                                 </button>
 
@@ -157,10 +159,10 @@
     <script src="~/Sweetalert2/sweetalert2.min.js"></script>
 
     <script>
-        function DeleteUser(UserId) {
+                function DeleteUser(UserId) {
             Swal.fire({
                 title: 'حذف کاربر',
-                text: "کاربر گرامی از حذف کاربر مطمئن هستید؟",
+                text: 'کاربر گرامی از حذف کاربر مطمئن هستید؟',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -168,17 +170,22 @@
                 confirmButtonText: 'بله، کاربر حذف شود',
                 cancelButtonText: 'خیر'
             }).then((result) => {
-                if (result.isConfirmed) {
+
+                if (result.value) {
+
                     $.ajax({
                         contentType: 'application/x-www-form-urlencoded',
                         dataType: 'json',
-                        type: "POST",
-                        url: "/Admin/Users/Delete",
+                        type: 'POST',
+                        url: '/Admin/Users/Delete',
+
                         data: {
                             UserId: UserId
                         },
+
                         success: function (data) {
-                            if (data.isSuccess == true) {
+
+                            if (data.isSuccess === true) {
                                 Swal.fire(
                                     'موفق!',
                                     data.message,
@@ -195,8 +202,13 @@
                                 );
                             }
                         },
-                        error: function (request) {
-                            alert(request.responseText);
+
+                        error: function (request, status, error) {
+                            Swal.fire(
+                                'خطا!',
+                                request.responseText || 'در ارتباط با سرور مشکلی رخ داد',
+                                'error'
+                            );
                         }
                     });
                 }
