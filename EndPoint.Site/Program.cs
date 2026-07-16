@@ -1,3 +1,5 @@
+using FinalProject_Store.Application.Common.Security;
+using FinalProject_Store.Application.Interfaces.Security;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using FinalProject_Store.Application.Interfaces.Contexts;
 using FinalProject_Store.Application.Services.Users.Commands.EditUser;
@@ -38,6 +40,7 @@ builder.Services.AddScoped<IRemoveUserService, RemoveUserService>();
 builder.Services.AddScoped<IUserStatusChangeService, UserStatusChangeService>();
 builder.Services.AddScoped<IEditUserService, EditUserService>();
 builder.Services.AddScoped<IUserLoginService, UserLoginService>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

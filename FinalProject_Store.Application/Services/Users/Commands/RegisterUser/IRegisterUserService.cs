@@ -1,4 +1,5 @@
-﻿using FinalProject_Store.Application.Interfaces.Contexts;
+﻿using FinalProject_Store.Application.Interfaces.Security;
+using FinalProject_Store.Application.Interfaces.Contexts;
 using FinalProject_Store.Common.Dto;
 using FinalProject_Store.Domain.Entities.Users;
 using FinalProject_Store.Application.Interfaces.Contexts;
@@ -20,10 +21,13 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
     public class RegisterUserService : IRegisterUserService
     {
         private readonly IDataBaseContext _context;
-
-        public RegisterUserService(IDataBaseContext context)
+        private readonly IPasswordHasher _passwordHasher;
+        public RegisterUserService(
+    IDataBaseContext context,
+    IPasswordHasher passwordHasher)
         {
             _context = context;
+            _passwordHasher = passwordHasher;
         }
         public ResultDto<ResultRegisterUserDto> Execute(RequestRegisterUserDto request)
         {
@@ -79,7 +83,10 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
                     };
                 }
 
-                var userExists = _context.Users.Any(p => p.Email == request.Email);
+                var normalizedEmail = request.Email.Trim().ToLower();
+
+                var userExists = _context.Users.Any(
+                    p => p.Email.ToLower() == normalizedEmail);
 
                 if (userExists)
                 {
@@ -87,7 +94,7 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
                     {
                         Data = new ResultRegisterUserDto()
                         {
-                            UserId = 0,
+                            UserId = 0
                         },
                         IsSuccess = false,
                         Message = "این ایمیل قبلاً ثبت شده است"
@@ -96,10 +103,9 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
 
                 User user = new User()
                 {
-                    Email = request.Email,
-                    FullName = request.FullName,
-                    Password = request.Password,
-                    // Password = HashPassword.Execute(request.Password),
+                    Email = normalizedEmail,
+                    FullName = request.FullName.Trim(),
+                    Password = _passwordHasher.HashPassword(request.Password),
                     isActive = true
                 };
 

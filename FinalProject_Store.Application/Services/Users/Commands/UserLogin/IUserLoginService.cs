@@ -1,23 +1,30 @@
 ﻿using FinalProject_Store.Application.Interfaces.Contexts;
+using FinalProject_Store.Application.Interfaces.Security;
 using FinalProject_Store.Common.Dto;
 
 namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
 {
     public interface IUserLoginService
     {
-        ResultDto<ResultUserLoginDto> Execute(RequestUserLoginDto request);
+        ResultDto<ResultUserLoginDto> Execute(
+            RequestUserLoginDto request);
     }
 
     public class UserLoginService : IUserLoginService
     {
         private readonly IDataBaseContext _context;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public UserLoginService(IDataBaseContext context)
+        public UserLoginService(
+            IDataBaseContext context,
+            IPasswordHasher passwordHasher)
         {
             _context = context;
+            _passwordHasher = passwordHasher;
         }
 
-        public ResultDto<ResultUserLoginDto> Execute(RequestUserLoginDto request)
+        public ResultDto<ResultUserLoginDto> Execute(
+            RequestUserLoginDto request)
         {
             if (string.IsNullOrWhiteSpace(request.Email))
             {
@@ -37,9 +44,11 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
                 };
             }
 
+            string normalizedEmail =
+                request.Email.Trim().ToLower();
+
             var user = _context.Users.FirstOrDefault(p =>
-                p.Email == request.Email &&
-                p.Password == request.Password &&
+                p.Email.ToLower() == normalizedEmail &&
                 p.IsRemoved == false);
 
             if (user == null)
@@ -47,7 +56,44 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
                 return new ResultDto<ResultUserLoginDto>
                 {
                     IsSuccess = false,
-                    Message = "کاربری با این مشخصات یافت نشد"
+                    Message = "ایمیل یا رمز عبور اشتباه است"
+                };
+            }
+
+            bool passwordIsValid;
+
+            if (_passwordHasher.IsHashed(user.Password))
+            {
+                passwordIsValid =
+                    _passwordHasher.VerifyPassword(
+                        user.Password,
+                        request.Password);
+            }
+            else
+            {
+                // پشتیبانی موقت از کاربران قدیمی
+                // که رمز آن‌ها به‌صورت خام ذخیره شده است.
+                passwordIsValid =
+                    user.Password == request.Password;
+
+                if (passwordIsValid)
+                {
+                    user.Password =
+                        _passwordHasher.HashPassword(
+                            request.Password);
+
+                    user.UpdateDate = DateTime.Now;
+
+                    _context.SaveChanges();
+                }
+            }
+
+            if (!passwordIsValid)
+            {
+                return new ResultDto<ResultUserLoginDto>
+                {
+                    IsSuccess = false,
+                    Message = "ایمیل یا رمز عبور اشتباه است"
                 };
             }
 
@@ -64,6 +110,7 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserLogin
             {
                 IsSuccess = true,
                 Message = "ورود با موفقیت انجام شد",
+
                 Data = new ResultUserLoginDto
                 {
                     UserId = user.Id,
