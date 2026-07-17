@@ -1,4 +1,5 @@
-﻿using FinalProject_Store.Application.Services.Users.Commands.EditUser;
+﻿using Microsoft.AspNetCore.Authorization;
+using FinalProject_Store.Application.Services.Users.Commands.EditUser;
 using FinalProject_Store.Application.Services.Users.Commands.RegisterUser;
 using FinalProject_Store.Application.Services.Users.Commands.RemoveUser;
 using FinalProject_Store.Application.Services.Users.Commands.UserStatusChange;
@@ -13,9 +14,9 @@ using System.Threading.Tasks;
 //
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class UsersController : Controller   
+    public class UsersController : AdminBaseController
     {
+
         private readonly IGetUsersService _getUsersService;
         private readonly IGetRolesService _getRolesService;
         private readonly IRegisterUserService _registerUserService;
