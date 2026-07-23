@@ -1,0 +1,191 @@
+﻿@model List<FinalProject_Store.Application.Services.Products.Categories.Queries.GetCategories.GetCategoryDto>
+
+@{
+    ViewData["Title"] = "مدیریت دسته‌بندی‌ها";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2">
+            <h3 class="content-header-title">
+                مدیریت دسته‌بندی‌ها
+            </h3>
+        </div>
+    </div>
+
+    <div class="content-body">
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                @TempData["SuccessMessage"]
+            </div>
+        }
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <section class="card mb-2">
+            <div class="card-header">
+                <h4 class="card-title">
+                    افزودن دسته‌بندی جدید
+                </h4>
+            </div>
+
+            <div class="card-content">
+                <div class="card-body">
+
+                    <form asp-area="Admin"
+                          asp-controller="Categories"
+                          asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="row align-items-end">
+
+                            <div class="col-md-8">
+                                <label for="categoryName">
+                                    نام دسته‌بندی
+                                </label>
+
+                                <input id="categoryName"
+                                       name="name"
+                                       type="text"
+                                       class="form-control"
+                                       maxlength="200"
+                                       placeholder="مثلاً لپ‌تاپ"
+                                       required />
+                            </div>
+
+                            <div class="col-md-4">
+                                <button type="submit"
+                                        class="btn btn-success btn-block">
+                                    افزودن دسته‌بندی
+                                </button>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="card-header">
+                <h4 class="card-title">
+                    فهرست دسته‌بندی‌ها
+                </h4>
+            </div>
+
+            <div class="card-content">
+                <div class="card-body">
+
+                    <form asp-area="Admin"
+                          asp-controller="Categories"
+                          asp-action="Create"
+                          method="post">
+
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+
+                            <div class="col-md-8">
+                                <div class="form-group mb-0">
+                                    <label for="categoryName">
+                                        نام دسته‌بندی
+                                    </label>
+
+                                    <input id="categoryName"
+                                           name="name"
+                                           type="text"
+                                           class="form-control"
+                                           maxlength="200"
+                                           placeholder="مثلاً لپ‌تاپ"
+                                           required />
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group mb-0">
+                                    <label style="visibility: hidden;">
+                                        دکمه ثبت
+                                    </label>
+
+                                    <button type="submit"
+                                            class="btn btn-success btn-block">
+                                        افزودن دسته‌بندی
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </form>
+
+                    @if (Model == null || Model.Count == 0)
+                    {
+                        <div class="alert alert-warning text-center">
+                            دسته‌بندی‌ای پیدا نشد.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>شناسه</th>
+                                        <th>نام دسته‌بندی</th>
+                                        <th>تعداد محصولات</th>
+                                        <th>وضعیت</th>
+                                        <th>تاریخ ایجاد</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Id</td>
+
+                                            <td>@item.Name</td>
+
+                                            <td>@item.ProductsCount</td>
+
+                                            <td>
+                                                @if (item.IsActive)
+                                                {
+                                                    <span class="badge badge-success">
+                                                        فعال
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">
+                                                        غیرفعال
+                                                    </span>
+                                                }
+                                            </td>
+
+                                            <td>
+                                                @item.InsertTime.ToString("yyyy/MM/dd HH:mm")
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            </div>
+        </section>
+
+    </div>
+</div>
