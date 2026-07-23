@@ -6,6 +6,7 @@
 }
 
 <div class="content-wrapper">
+
     <div class="content-header row">
         <div class="content-header-left col-md-6 col-12 mb-2">
             <h3 class="content-header-title">
@@ -30,7 +31,9 @@
             </div>
         }
 
+        <!-- فرم اول: افزودن دسته‌بندی -->
         <section class="card mb-2">
+
             <div class="card-header">
                 <h4 class="card-title">
                     افزودن دسته‌بندی جدید
@@ -47,12 +50,17 @@
 
                         @Html.AntiForgeryToken()
 
-                        <div class="row align-items-end">
+                        <div class="form-group mb-0">
 
-                            <div class="col-md-8">
-                                <label for="categoryName">
-                                    نام دسته‌بندی
-                                </label>
+                            <label for="categoryName">
+                                نام دسته‌بندی
+                            </label>
+
+                            <div style="
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+        ">
 
                                 <input id="categoryName"
                                        name="name"
@@ -60,24 +68,36 @@
                                        class="form-control"
                                        maxlength="200"
                                        placeholder="مثلاً لپ‌تاپ"
-                                       required />
-                            </div>
+                                       required
+                                       style="
+                       height: 42px;
+                       flex: 1;
+                   " />
 
-                            <div class="col-md-4">
                                 <button type="submit"
-                                        class="btn btn-success btn-block">
+                                        class="btn btn-success"
+                                        style="
+                        height: 42px;
+                        width: 230px;
+                        flex-shrink: 0;
+                    ">
                                     افزودن دسته‌بندی
                                 </button>
+
                             </div>
 
                         </div>
+
                     </form>
 
                 </div>
             </div>
+
         </section>
 
+        <!-- فرم دوم: جستجوی دسته‌بندی -->
         <section class="card">
+
             <div class="card-header">
                 <h4 class="card-title">
                     فهرست دسته‌بندی‌ها
@@ -89,43 +109,64 @@
 
                     <form asp-area="Admin"
                           asp-controller="Categories"
-                          asp-action="Create"
-                          method="post">
+                          asp-action="Index"
+                          method="get"
+                          class="mb-2">
 
-                        @Html.AntiForgeryToken()
+                        <div class="form-group mb-0">
 
-                        <div class="row">
+                            <label for="searchKey">
+                                جستجوی نام دسته‌بندی
+                            </label>
 
-                            <div class="col-md-8">
-                                <div class="form-group mb-0">
-                                    <label for="categoryName">
-                                        نام دسته‌بندی
-                                    </label>
+                            <div style="
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            width: 100%;
+        ">
 
-                                    <input id="categoryName"
-                                           name="name"
-                                           type="text"
-                                           class="form-control"
-                                           maxlength="200"
-                                           placeholder="مثلاً لپ‌تاپ"
-                                           required />
-                                </div>
-                            </div>
+                                <input id="searchKey"
+                                       name="searchKey"
+                                       type="text"
+                                       value="@ViewBag.SearchKey"
+                                       class="form-control"
+                                       placeholder="نام دسته‌بندی را وارد کنید..."
+                                       style="
+                       height: 42px;
+                       flex: 1;
+                       min-width: 0;
+                   " />
 
-                            <div class="col-md-4">
-                                <div class="form-group mb-0">
-                                    <label style="visibility: hidden;">
-                                        دکمه ثبت
-                                    </label>
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        style="
+                        height: 42px;
+                        width: 200px;
+                        flex-shrink: 0;
+                    ">
+                                    جستجو
+                                </button>
 
-                                    <button type="submit"
-                                            class="btn btn-success btn-block">
-                                        افزودن دسته‌بندی
-                                    </button>
-                                </div>
+                                <a asp-area="Admin"
+                                   asp-controller="Categories"
+                                   asp-action="Index"
+                                   class="btn btn-secondary"
+                                   style="
+                   height: 42px;
+                   width: 200px;
+                   flex-shrink: 0;
+                   display: flex;
+                   align-items: center;
+                   justify-content: center;
+               ">
+                                    نمایش همه
+                                </a>
+
                             </div>
 
                         </div>
+
                     </form>
 
                     @if (Model == null || Model.Count == 0)
@@ -137,7 +178,9 @@
                     else
                     {
                         <div class="table-responsive">
+
                             <table class="table table-striped table-bordered">
+
                                 <thead>
                                     <tr>
                                         <th>شناسه</th>
@@ -149,9 +192,11 @@
                                 </thead>
 
                                 <tbody>
+
                                     @foreach (var item in Model)
                                     {
                                         <tr>
+
                                             <td>@item.Id</td>
 
                                             <td>@item.Name</td>
@@ -176,15 +221,20 @@
                                             <td>
                                                 @item.InsertTime.ToString("yyyy/MM/dd HH:mm")
                                             </td>
+
                                         </tr>
                                     }
+
                                 </tbody>
+
                             </table>
+
                         </div>
                     }
 
                 </div>
             </div>
+
         </section>
 
     </div>
