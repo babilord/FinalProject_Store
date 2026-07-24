@@ -188,6 +188,7 @@
                                         <th>تعداد محصولات</th>
                                         <th>وضعیت</th>
                                         <th>تاریخ ایجاد</th>
+                                        <th>عملیات</th>
                                     </tr>
                                 </thead>
 
@@ -222,6 +223,16 @@
                                                 @item.InsertTime.ToString("yyyy/MM/dd HH:mm")
                                             </td>
 
+                                            <td>
+                                                <button type="button"
+                                                        class="btn btn-warning btn-sm"
+                                                        onclick="ShowEditCategoryModal(
+                                                @item.Id,
+                                                '@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(item.Name))'
+                                            )">
+                                                    ویرایش
+                                                </button>
+                                            </td>
                                         </tr>
                                     }
 
@@ -236,6 +247,175 @@
             </div>
 
         </section>
+
+        @section Modals
+        {
+            <div class="modal fade"
+                 id="editCategoryModal"
+                 tabindex="-1"
+                 role="dialog"
+                 aria-labelledby="editCategoryModalLabel"
+                 aria-hidden="true">
+
+                <div class="modal-dialog" role="document">
+
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+
+                            <h5 class="modal-title"
+                                id="editCategoryModalLabel">
+                                ویرایش دسته‌بندی
+                            </h5>
+
+                            <button type="button"
+                                    class="close"
+                                    data-dismiss="modal"
+                                    aria-label="Close">
+
+                                <span aria-hidden="true">
+                                    &times;
+                                </span>
+
+                            </button>
+
+                        </div>
+
+                        <div class="modal-body">
+
+                            <form id="editCategoryForm">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden"
+                                       id="editCategoryId"
+                                       name="id" />
+
+                                <div class="form-group">
+
+                                    <label for="editCategoryName">
+                                        نام دسته‌بندی
+                                    </label>
+
+                                    <input type="text"
+                                           id="editCategoryName"
+                                           name="name"
+                                           class="form-control"
+                                           maxlength="200"
+                                           required />
+
+                                </div>
+
+                            </form>
+
+                        </div>
+
+                        <div class="modal-footer">
+
+                            <button type="button"
+                                    class="btn btn-secondary"
+                                    data-dismiss="modal">
+                                انصراف
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-success"
+                                    onclick="EditCategory()">
+                                ذخیره تغییرات
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        }
+
+        @section Scripts
+        {
+            <script>
+
+                function ShowEditCategoryModal(id, name) {
+
+                    $("#editCategoryId").val(id);
+                    $("#editCategoryName").val(name);
+
+                    $("#editCategoryModal").modal("show");
+                }
+
+                function EditCategory() {
+
+                    const id = $("#editCategoryId").val();
+                    const name = $("#editCategoryName").val().trim();
+
+                                    if (name === "") {
+
+                    swal({
+                        title: "خطا",
+                        text: "نام دسته‌بندی را وارد کنید.",
+                        type: "error",
+                        confirmButtonText: "باشه"
+                    });
+
+                    return;
+                }
+
+                    const token =
+                        $("#editCategoryForm input[name='__RequestVerificationToken']")
+                            .val();
+
+                    $.ajax({
+                        url: "/Admin/Categories/Edit",
+                        type: "POST",
+
+                        data: {
+                            id: id,
+                            name: name,
+                            __RequestVerificationToken: token
+                        },
+
+                        success: function (result) {
+
+                            if (result.isSuccess) {
+
+                                $("#editCategoryModal").modal("hide");
+
+                                                swal({
+                    title: "موفق",
+                    text: result.message,
+                    type: "success",
+                    confirmButtonText: "باشه"
+                }).then(function () {
+                    location.reload();
+                });
+
+                            } else {
+
+                                                swal({
+                    title: "خطا",
+                    text: result.message,
+                    type: "error",
+                    confirmButtonText: "باشه"
+                });
+                            }
+                        },
+
+                        error: function () {
+
+                            swal({
+                                title: "خطا",
+                                text: "خطایی هنگام ویرایش دسته‌بندی رخ داد.",
+                                icon: "error",
+                                button: "باشه"
+                            });
+                        }
+                    });
+                }
+
+            </script>
+        }
 
     </div>
 </div>

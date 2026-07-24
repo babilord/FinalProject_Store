@@ -1,5 +1,10 @@
 ﻿@{
     Layout = null;
+    var currentController =
+    ViewContext.RouteData.Values["controller"]?.ToString();
+
+    var currentAction =
+        ViewContext.RouteData.Values["action"]?.ToString();
 }
 
 <!DOCTYPE html>
@@ -47,29 +52,44 @@
             <div class="sidebar-content">
                 <div class="nav-container">
                     <ul id="main-menu-navigation" data-menu="menu-navigation" class="navigation navigation-main">
-                        <li class="has-sub nav-item">
-                            <a href="#"><i class="icon-home"></i><span data-i18n="" class="menu-title">داشبورد</span><span class="tag badge badge-pill badge-danger mt-1">2</span></a>
-                        </li>
+                        <li class="has-sub nav-item @(currentController == "Users" ? "open" : "")">
+                            <a href="#">
+                                <i class="icon-users"></i>
 
+                                <span class="menu-title">
+                                    مدیریت کاربران
+                                </span>
+                            </a>
 
-
-                        <li class="has-sub nav-item">
-                            <a href="#"><i class="icon-users"></i><span data-i18n="" class="menu-title">مدیریت کاربران</span></a>
                             <ul class="menu-content">
-                                <li class="active">
-                                    <a href="~/admin/users/index" class="menu-item">لیست کاربران</a>
+
+                                <li class="@(currentController == "Users" && currentAction == "Index" ? "active" : "")">
+                                    <a asp-area="Admin"
+                                       asp-controller="Users"
+                                       asp-action="Index"
+                                       class="menu-item">
+                                        لیست کاربران
+                                    </a>
                                 </li>
-                                <li>
-                                    <a href="~/admin/users/Create" class="menu-item">ثبت نام کاربر جدید *</a>
+
+                                <li class="@(currentController == "Users" && currentAction == "Create" ? "active" : "")">
+                                    <a asp-area="Admin"
+                                       asp-controller="Users"
+                                       asp-action="Create"
+                                       class="menu-item">
+                                        ثبت نام کاربر جدید *
+                                    </a>
                                 </li>
+
                             </ul>
                         </li>
 
-                        <li>
-                            <a class="menu-item"
-                               asp-area="Admin"
+                        <li class="@(currentController == "Categories" ? "active" : "")">
+
+                            <a asp-area="Admin"
                                asp-controller="Categories"
-                               asp-action="Index">
+                               asp-action="Index"
+                               class="menu-item">
                                 مدیریت دسته‌بندی‌ها
                             </a>
                         </li>

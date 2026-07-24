@@ -1,6 +1,7 @@
 ﻿using FinalProject_Store.Application.Services.Products.Categories.Commands.AddCategory;
 using FinalProject_Store.Application.Services.Products.Categories.Queries.GetCategories;
 using Microsoft.AspNetCore.Mvc;
+using FinalProject_Store.Application.Services.Products.Categories.Commands.EditCategory;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -8,13 +9,16 @@ namespace EndPoint.Site.Areas.Admin.Controllers
     {
         private readonly IGetCategoriesService _getCategoriesService;
         private readonly IAddCategoryService _addCategoryService;
+        private readonly IEditCategoryService _editCategoryService;
 
         public CategoriesController(
             IGetCategoriesService getCategoriesService,
-            IAddCategoryService addCategoryService)
+            IAddCategoryService addCategoryService,
+            IEditCategoryService editCategoryService)
         {
             _getCategoriesService = getCategoriesService;
             _addCategoryService = addCategoryService;
+            _editCategoryService = editCategoryService;
         }
 
         [HttpGet]
@@ -44,5 +48,15 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(long id, string name)
+        {
+            var result = _editCategoryService.Execute(id, name);
+
+            return Json(result);
+        }
+
     }
 }
