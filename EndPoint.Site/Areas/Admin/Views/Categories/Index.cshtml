@@ -335,6 +335,8 @@
 
         @section Scripts
         {
+            <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+            <script src="~/Sweetalert2/sweetalert2.min.js"></script>
             <script>
 
                 function ShowEditCategoryModal(id, name) {
@@ -342,7 +344,7 @@
                     $("#editCategoryId").val(id);
                     $("#editCategoryName").val(name);
 
-                    $("#editCategoryModal").modal("show");
+                    $("#editCategoryModal").appendTo("body").modal("show");
                 }
 
                 function EditCategory() {
@@ -350,17 +352,16 @@
                     const id = $("#editCategoryId").val();
                     const name = $("#editCategoryName").val().trim();
 
-                                    if (name === "") {
+                    if (name === "") {
 
-                    swal({
-                        title: "خطا",
-                        text: "نام دسته‌بندی را وارد کنید.",
-                        type: "error",
-                        confirmButtonText: "باشه"
-                    });
+                        Swal.fire(
+                            "خطا!",
+                            "نام دسته‌بندی نمی‌تواند خالی باشد.",
+                            "error"
+                        );
 
-                    return;
-                }
+                        return;
+                    }
 
                     const token =
                         $("#editCategoryForm input[name='__RequestVerificationToken']")
@@ -378,38 +379,36 @@
 
                         success: function (result) {
 
-                            if (result.isSuccess) {
+                            if (result.isSuccess === true) {
 
                                 $("#editCategoryModal").modal("hide");
 
-                                                swal({
-                    title: "موفق",
-                    text: result.message,
-                    type: "success",
-                    confirmButtonText: "باشه"
-                }).then(function () {
-                    location.reload();
-                });
+                                Swal.fire(
+                                    "موفق!",
+                                    result.message,
+                                    "success"
+                                ).then(function () {
+                                    location.reload();
+                                });
 
                             } else {
 
-                                                swal({
-                    title: "خطا",
-                    text: result.message,
-                    type: "error",
-                    confirmButtonText: "باشه"
-                });
+                                Swal.fire(
+                                    "هشدار!",
+                                    result.message,
+                                    "warning"
+                                );
                             }
                         },
 
-                        error: function () {
+                        error: function (request) {
 
-                            swal({
-                                title: "خطا",
-                                text: "خطایی هنگام ویرایش دسته‌بندی رخ داد.",
-                                icon: "error",
-                                button: "باشه"
-                            });
+                            Swal.fire(
+                                "خطا!",
+                                request.responseText ||
+                                "خطایی هنگام ویرایش دسته‌بندی رخ داد.",
+                                "error"
+                            );
                         }
                     });
                 }

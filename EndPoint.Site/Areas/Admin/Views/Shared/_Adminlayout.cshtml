@@ -52,8 +52,12 @@
             <div class="sidebar-content">
                 <div class="nav-container">
                     <ul id="main-menu-navigation" data-menu="menu-navigation" class="navigation navigation-main">
-                        <li class="has-sub nav-item @(currentController == "Users" ? "open" : "")">
-                            <a href="#">
+                        <li id="usersMenu"
+                            class="has-sub nav-item">
+
+                            <a href="javascript:void(0);"
+                               id="usersMenuToggle">
+
                                 <i class="icon-users"></i>
 
                                 <span class="menu-title">
@@ -61,9 +65,13 @@
                                 </span>
                             </a>
 
-                            <ul class="menu-content">
+                            <ul id="usersSubMenu"
+                                class="menu-content">
 
-                                <li class="@(currentController == "Users" && currentAction == "Index" ? "active" : "")">
+                                <li class="@(currentController == "Users" && currentAction == "Index"
+                                                        ? "active"
+                                                        : "")">
+
                                     <a asp-area="Admin"
                                        asp-controller="Users"
                                        asp-action="Index"
@@ -72,7 +80,10 @@
                                     </a>
                                 </li>
 
-                                <li class="@(currentController == "Users" && currentAction == "Create" ? "active" : "")">
+                                <li class="@(currentController == "Users" && currentAction == "Create"
+                                                        ? "active"
+                                                        : "")">
+
                                     <a asp-area="Admin"
                                        asp-controller="Users"
                                        asp-action="Create"
@@ -83,7 +94,6 @@
 
                             </ul>
                         </li>
-
                         <li class="@(currentController == "Categories" ? "active" : "")">
 
                             <a asp-area="Admin"
@@ -434,11 +444,46 @@
     <script src="~/AdminTemplate/app-assets/js/app-sidebar.js"></script>
     <script src="~/AdminTemplate/app-assets/js/notification-sidebar.js"></script>
     <script src="~/AdminTemplate/app-assets/js/customizer.js"></script>
-    <!-- END CONVEX JS-->
-    <!-- BEGIN PAGE LEVEL JS-->
-    <!-- END PAGE LEVEL JS-->
 
-    @* @RenderSection("Scripts"); *@
+    <script>
+        $(document).ready(function () {
+
+            var usersMenu = $("#usersMenu");
+            var usersSubMenu = $("#usersSubMenu");
+            var usersMenuToggle = $("#usersMenuToggle");
+
+            var savedState = localStorage.getItem("usersMenuState");
+
+            // بازیابی آخرین وضعیت ذخیره‌شده
+            if (savedState === "open") {
+                usersMenu.addClass("open");
+                usersSubMenu.css("display", "block");
+            }
+            else if (savedState === "closed") {
+                usersMenu.removeClass("open");
+                usersSubMenu.css("display", "none");
+            }
+
+            // بعد از کلیک، اجازه می‌دهیم قالب منو را باز یا بسته کند
+            // سپس وضعیت نهایی را ذخیره می‌کنیم
+            usersMenuToggle.on("click.usersMenuState", function () {
+
+                setTimeout(function () {
+
+                    var isOpen =
+                        usersMenu.hasClass("open") ||
+                        usersSubMenu.is(":visible");
+
+                    localStorage.setItem(
+                        "usersMenuState",
+                        isOpen ? "open" : "closed"
+                    );
+
+                }, 300);
+            });
+        });
+    </script>
+
     @RenderSection("Scripts", false)
 
     @RenderSection("Modals", false)
