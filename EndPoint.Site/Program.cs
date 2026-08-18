@@ -11,9 +11,11 @@ using FinalProject_Store.Application.Services.Users.Queries.GetUsers;
 using FinalProject_Store.Persistence.Contexts;
 using Microsoft.EntityFrameworkCore;
 using FinalProject_Store.Application.Services.Users.Commands.UserLogin;
-using FinalProject_Store.Application.Services.Products.Categories.Commands.AddCategory;
-using FinalProject_Store.Application.Services.Products.Categories.Queries.GetCategories;
-using FinalProject_Store.Application.Services.Products.Categories.Commands.EditCategory;
+using FinalProject_Store.Application.Services.Products.Commands.AddProduct;
+using FinalProject_Store.Application.Services.Categories.Commands;
+using FinalProject_Store.Application.Services.Categories.Queries;
+using FinalProject_Store.Application.Services.Categories.Commands.EditCategory;
+using FinalProject_Store.Application.Services.Categories.Queries.GetActiveCategories;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -51,6 +53,8 @@ builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IAddCategoryService, AddCategoryService>();
 builder.Services.AddScoped<IGetCategoriesService, GetCategoriesService>();
 builder.Services.AddScoped<IEditCategoryService, EditCategoryService>();
+builder.Services.AddScoped<IAddProductService, AddProductService>();
+builder.Services.AddScoped<IGetActiveCategoriesService,GetActiveCategoriesService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

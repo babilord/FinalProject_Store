@@ -3,7 +3,7 @@ using FinalProject_Store.Common.Dto;
 using FinalProject_Store.Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinalProject_Store.Application.Services.Products.Categories.Commands.AddCategory
+namespace FinalProject_Store.Application.Services.Categories.Commands
 {
     public interface IAddCategoryService
     {

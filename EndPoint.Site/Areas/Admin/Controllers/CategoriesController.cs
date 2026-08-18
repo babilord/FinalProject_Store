@@ -1,7 +1,7 @@
-﻿using FinalProject_Store.Application.Services.Products.Categories.Commands.AddCategory;
-using FinalProject_Store.Application.Services.Products.Categories.Queries.GetCategories;
-using Microsoft.AspNetCore.Mvc;
-using FinalProject_Store.Application.Services.Products.Categories.Commands.EditCategory;
+﻿using Microsoft.AspNetCore.Mvc;
+using FinalProject_Store.Application.Services.Categories.Commands;
+using FinalProject_Store.Application.Services.Categories.Queries;
+using FinalProject_Store.Application.Services.Categories.Commands.EditCategory;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {

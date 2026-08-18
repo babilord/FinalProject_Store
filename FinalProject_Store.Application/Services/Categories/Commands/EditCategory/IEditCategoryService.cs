@@ -2,7 +2,7 @@
 using FinalProject_Store.Common.Dto;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinalProject_Store.Application.Services.Products.Categories.Commands.EditCategory
+namespace FinalProject_Store.Application.Services.Categories.Commands.EditCategory
 {
     public interface IEditCategoryService
     {

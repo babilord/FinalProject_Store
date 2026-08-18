@@ -1,7 +1,7 @@
 ﻿using FinalProject_Store.Application.Interfaces.Contexts;
 using Microsoft.EntityFrameworkCore;
 
-namespace FinalProject_Store.Application.Services.Products.Categories.Queries.GetCategories
+namespace FinalProject_Store.Application.Services.Categories.Queries
 {
     public interface IGetCategoriesService
     {
