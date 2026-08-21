@@ -1,0 +1,80 @@
+@using FinalProject_Store.Application.Services.Products.Queries
+@model List<GetProductDto>
+
+@{
+    ViewData["Title"] = "مدیریت محصولات";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="content-wrapper">
+    <div class="content-header row">
+        <div class="content-header-left col-md-6 col-12 mb-2">
+            <h3 class="content-header-title">مدیریت محصولات</h3>
+        </div>
+    </div>
+
+    <div class="content-body">
+        <section class="card">
+            <div class="card-header">
+                <h4 class="card-title">فهرست محصولات</h4>
+            </div>
+
+            <div class="card-content">
+                <div class="card-body">
+                    <a asp-area="Admin"
+                       asp-controller="Products"
+                       asp-action="Create"
+                       class="btn btn-success mb-2">
+                        ثبت محصول جدید
+                    </a>
+
+                    @if (Model == null || Model.Count == 0)
+                    {
+                        <div class="alert alert-warning text-center">
+                            محصولی ثبت نشده است.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>نام محصول</th>
+                                        <th>برند</th>
+                                        <th>قیمت</th>
+                                        <th>موجودی</th>
+                                        <th>دسته‌بندی</th>
+                                        <th>وضعیت</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Name</td>
+                                            <td>@item.Brand</td>
+                                            <td>@item.Price.ToString("N0")</td>
+                                            <td>@item.Inventory</td>
+                                            <td>@item.CategoryName</td>
+                                            <td>
+                                                @if (item.IsActive)
+                                                {
+                                                    <span class="badge badge-success">فعال</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge badge-danger">غیرفعال</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

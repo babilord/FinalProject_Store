@@ -1,23 +1,32 @@
 ﻿using EndPoint.Site.Areas.Admin.Models.Products;
 using FinalProject_Store.Application.Services.Categories.Queries.GetActiveCategories;
 using FinalProject_Store.Application.Services.Products.Commands.AddProduct;
+using FinalProject_Store.Application.Services.Products.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
-    [Area("Admin")]
-    public class ProductsController : Controller
+    public class ProductsController : AdminBaseController
     {
         private readonly IAddProductService _addProductService;
         private readonly IGetActiveCategoriesService _getActiveCategoriesService;
-
+        private readonly IGetProductsService _getProductsService;
         public ProductsController(
             IAddProductService addProductService,
-            IGetActiveCategoriesService getActiveCategoriesService)
+            IGetActiveCategoriesService getActiveCategoriesService,
+            IGetProductsService getProductsService)
         {
             _addProductService = addProductService;
             _getActiveCategoriesService = getActiveCategoriesService;
+            _getProductsService = getProductsService;
+        }
+        [HttpGet]
+        public IActionResult Index()
+        {
+            var result = _getProductsService.Execute();
+
+            return View(result.Products);
         }
 
         [HttpGet]
