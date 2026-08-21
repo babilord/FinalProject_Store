@@ -17,6 +17,10 @@ using FinalProject_Store.Application.Services.Categories.Queries;
 using FinalProject_Store.Application.Services.Categories.Commands.EditCategory;
 using FinalProject_Store.Application.Services.Categories.Queries.GetActiveCategories;
 using FinalProject_Store.Application.Services.Products.Queries;
+using FinalProject_Store.Application.Services.Products.Commands.EditProduct;
+using FinalProject_Store.Application.Services.Products.Commands.ProductStatusChange;
+using FinalProject_Store.Application.Services.Products.Commands.RemoveProduct;
+using FinalProject_Store.Application.Services.Products.Queries.GetProductDetails;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -57,6 +61,10 @@ builder.Services.AddScoped<IEditCategoryService, EditCategoryService>();
 builder.Services.AddScoped<IAddProductService, AddProductService>();
 builder.Services.AddScoped<IGetActiveCategoriesService,GetActiveCategoriesService>();
 builder.Services.AddScoped<IGetProductsService, GetProductsService>();
+builder.Services.AddScoped<IGetProductDetailsService, GetProductDetailsService>();
+builder.Services.AddScoped<IEditProductService, EditProductService>();
+builder.Services.AddScoped<IProductStatusChangeService, ProductStatusChangeService>();
+builder.Services.AddScoped<IRemoveProductService, RemoveProductService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

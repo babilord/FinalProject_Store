@@ -48,6 +48,25 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 };
             }
 
+            if (request.Name.Length > 300)
+            {
+                return new ResultDto { IsSuccess = false, Message = "نام محصول نمی‌تواند بیشتر از ۳۰۰ کاراکتر باشد." };
+            }
+
+            request.Brand ??= string.Empty;
+            request.Description ??= string.Empty;
+            request.ImageSrc ??= string.Empty;
+
+            if (request.Brand.Length > 200)
+            {
+                return new ResultDto { IsSuccess = false, Message = "نام برند نمی‌تواند بیشتر از ۲۰۰ کاراکتر باشد." };
+            }
+
+            if (request.Description.Length > 4000)
+            {
+                return new ResultDto { IsSuccess = false, Message = "توضیحات نمی‌تواند بیشتر از ۴۰۰۰ کاراکتر باشد." };
+            }
+
             if (request.Price <= 0)
             {
                 return new ResultDto
