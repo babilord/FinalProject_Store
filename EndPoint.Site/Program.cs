@@ -21,6 +21,7 @@ using FinalProject_Store.Application.Services.Products.Commands.EditProduct;
 using FinalProject_Store.Application.Services.Products.Commands.ProductStatusChange;
 using FinalProject_Store.Application.Services.Products.Commands.RemoveProduct;
 using FinalProject_Store.Application.Services.Products.Queries.GetProductDetails;
+using FinalProject_Store.Application.Services.Products.Queries.CustomerCatalog;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -65,6 +66,8 @@ builder.Services.AddScoped<IGetProductDetailsService, GetProductDetailsService>(
 builder.Services.AddScoped<IEditProductService, EditProductService>();
 builder.Services.AddScoped<IProductStatusChangeService, ProductStatusChangeService>();
 builder.Services.AddScoped<IRemoveProductService, RemoveProductService>();
+builder.Services.AddScoped<IGetCustomerProductsService, GetCustomerProductsService>();
+builder.Services.AddScoped<IGetCustomerProductDetailsService, GetCustomerProductDetailsService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
