@@ -103,6 +103,15 @@
                                 مدیریت دسته‌بندی‌ها
                             </a>
                         </li>
+                        <li class="@(currentController == "Products" ? "active" : "")">
+
+                            <a asp-area="Admin"
+                               asp-controller="Products"
+                               asp-action="Index"
+                               class="menu-item">
+                                مدیریت محصولات
+                            </a>
+                        </li>
 
                     </ul>
                 </div>

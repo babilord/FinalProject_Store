@@ -1,0 +1,193 @@
+﻿@model EndPoint.Site.Areas.Admin.Models.Products.CreateProductViewModel
+
+@{
+    ViewData["Title"] = "ثبت محصول جدید";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var successMessage = TempData["SuccessMessage"]?.ToString();
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">ثبت محصول جدید</h4>
+                </div>
+
+                <div class="card-body">
+
+                    <form asp-area="Admin"
+                          asp-controller="Products"
+                          asp-action="Create"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        @Html.AntiForgeryToken()
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Name"></label>
+
+                                    <input asp-for="Name"
+                                           class="form-control"
+                                           placeholder="نام محصول را وارد کنید" />
+
+                                    <span asp-validation-for="Name"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Brand"></label>
+
+                                    <input asp-for="Brand"
+                                           class="form-control"
+                                           placeholder="نام برند را وارد کنید" />
+
+                                    <span asp-validation-for="Brand"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="CategoryId"></label>
+
+                                    <select asp-for="CategoryId"
+                                            asp-items="Model.Categories"
+                                            class="form-control">
+                                        <option value="0">
+                                            دسته‌بندی را انتخاب کنید
+                                        </option>
+                                    </select>
+
+                                    <span asp-validation-for="CategoryId"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Price"></label>
+
+                                    <input asp-for="Price"
+                                           class="form-control"
+                                           type="number"
+                                           min="1"
+                                           step="0.01" />
+
+                                    <span asp-validation-for="Price"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Inventory"></label>
+
+                                    <input asp-for="Inventory"
+                                           class="form-control"
+                                           type="number"
+                                           min="0" />
+
+                                    <span asp-validation-for="Inventory"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Image"></label>
+
+                                    <input asp-for="Image"
+                                           class="form-control"
+                                           type="file"
+                                           accept="image/*" />
+
+                                    <span asp-validation-for="Image"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="form-check mt-3">
+                                    <input asp-for="IsActive"
+                                           class="form-check-input" />
+
+                                    <label asp-for="IsActive"
+                                           class="form-check-label">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-group mb-3">
+                                    <label asp-for="Description"></label>
+
+                                    <textarea asp-for="Description"
+                                              class="form-control"
+                                              rows="5"
+                                              placeholder="توضیحات محصول را وارد کنید">
+                                    </textarea>
+
+                                    <span asp-validation-for="Description"
+                                          class="text-danger">
+                                    </span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <button type="submit"
+                                class="btn btn-success">
+                            ثبت محصول
+                        </button>
+
+                        <a asp-area="Admin"
+                           asp-controller="Products"
+                           asp-action="Index"
+                           class="btn btn-secondary">
+                            انصراف
+                        </a>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts
+{
+    <link href="~/Sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <script src="~/Sweetalert2/sweetalert2.min.js"></script>
+
+    <partial name="_ValidationScriptsPartial" />
+
+    @if (!string.IsNullOrWhiteSpace(successMessage))
+    {
+        <script>
+            Swal.fire(
+                "موفق!",
+                @Html.Raw(System.Text.Json.JsonSerializer.Serialize(successMessage)),
+                "success"
+            );
+        </script>
+    }
+}
