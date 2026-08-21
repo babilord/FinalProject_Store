@@ -1,0 +1,86 @@
+@using FinalProject_Store.Application.Services.Products.Queries.CustomerCatalog
+@model CustomerProductDetailsDto
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<main class="main-content dt-sl mb-3">
+    <div class="container main-container">
+        <nav aria-label="مسیر راهنما" class="mt-4 mb-3">
+            <ol class="breadcrumb bg-white shadow-sm">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">خانه</a></li>
+                <li class="breadcrumb-item"><a asp-controller="Products" asp-action="Index">محصولات</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+
+        <article class="card border-0 shadow-sm product-detail-card">
+            <div class="card-body p-4">
+                <div class="row">
+                    <div class="col-lg-5 col-md-6 mb-4 mb-md-0">
+                        <div class="detail-image-box">
+                            @if (string.IsNullOrWhiteSpace(Model.ImageSrc))
+                            {
+                                <span class="detail-placeholder" role="img" aria-label="تصویر محصول موجود نیست">
+                                    <i class="mdi mdi-image-off"></i><span>تصویری برای این محصول ثبت نشده است</span>
+                                </span>
+                            }
+                            else
+                            {
+                                <img src="@Model.ImageSrc" class="img-fluid detail-product-image" alt="@Model.Name" />
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-7 col-md-6">
+                        <span class="badge badge-light mb-2">@Model.CategoryName</span>
+                        <h1 class="h3 product-detail-title">@Model.Name</h1>
+                        @if (!string.IsNullOrWhiteSpace(Model.Brand))
+                        {
+                            <p class="text-muted">برند: <strong>@Model.Brand</strong></p>
+                        }
+                        <hr />
+                        <div class="availability-box mb-3">
+                            <i class="mdi mdi-check-circle text-success"></i>
+                            <span>موجود در انبار</span>
+                            <small class="text-muted mr-2">(@Model.Inventory عدد)</small>
+                        </div>
+                        <div class="detail-price mb-4">@Model.Price.ToString("N0") <small>تومان</small></div>
+                        <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="fa fa-arrow-right ml-1"></i> بازگشت به محصولات
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="product-description">
+                            <h2 class="h5 mb-3">معرفی محصول</h2>
+                            @if (string.IsNullOrWhiteSpace(Model.Description))
+                            {
+                                <p class="text-muted mb-0">توضیحاتی برای این محصول ثبت نشده است.</p>
+                            }
+                            else
+                            {
+                                <p class="mb-0">@Model.Description</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+</main>
+
+<style>
+    .product-detail-card { border-radius: 12px; }
+    .detail-image-box { min-height: 390px; display: flex; align-items: center; justify-content: center; border: 1px solid #eee; border-radius: 10px; overflow: hidden; background: #fff; }
+    .detail-product-image { width: 100%; max-height: 390px; object-fit: contain; padding: 20px; }
+    .detail-placeholder { min-height: 390px; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f6f6f6; color: #aaa; text-align: center; }
+    .detail-placeholder i { font-size: 72px; line-height: 1; margin-bottom: 12px; }
+    .product-detail-title { line-height: 1.8; color: #333; }
+    .availability-box { font-size: 16px; }
+    .availability-box i { font-size: 22px; vertical-align: middle; }
+    .detail-price { color: #ef394e; font-size: 25px; font-weight: bold; }
+    .detail-price small { font-size: 14px; }
+    .product-description { background: #fafafa; border-right: 4px solid #00bfd6; border-radius: 6px; padding: 22px; line-height: 2.2; white-space: pre-line; }
+</style>
