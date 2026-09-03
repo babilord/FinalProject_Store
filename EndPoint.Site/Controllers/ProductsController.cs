@@ -1,5 +1,6 @@
 using FinalProject_Store.Application.Services.Products.Queries.CustomerCatalog;
 using Microsoft.AspNetCore.Mvc;
+using FinalProject_Store.Application.Services.Products.Queries.GetProductImage;
 
 namespace EndPoint.Site.Controllers
 {
@@ -7,13 +8,16 @@ namespace EndPoint.Site.Controllers
     {
         private readonly IGetCustomerProductsService _getCustomerProductsService;
         private readonly IGetCustomerProductDetailsService _getCustomerProductDetailsService;
+        private readonly IGetProductImageService _getProductImageService;
 
         public ProductsController(
             IGetCustomerProductsService getCustomerProductsService,
-            IGetCustomerProductDetailsService getCustomerProductDetailsService)
+            IGetCustomerProductDetailsService getCustomerProductDetailsService,
+            IGetProductImageService getProductImageService)
         {
             _getCustomerProductsService = getCustomerProductsService;
             _getCustomerProductDetailsService = getCustomerProductDetailsService;
+            _getProductImageService = getProductImageService;
         }
 
         [HttpGet]
@@ -39,6 +43,21 @@ namespace EndPoint.Site.Controllers
             }
 
             return View(result.Data);
+        }
+
+        [HttpGet]
+        [ResponseCache(Duration = 300, Location = ResponseCacheLocation.Client)]
+        public async Task<IActionResult> Image(long id, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var image = await _getProductImageService.ExecuteAsync(id, cancellationToken);
+                return image == null ? NotFound() : File(image.Content, image.ContentType);
+            }
+            catch
+            {
+                return NotFound();
+            }
         }
     }
 }

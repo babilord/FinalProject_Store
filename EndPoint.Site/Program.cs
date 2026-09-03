@@ -22,6 +22,10 @@ using FinalProject_Store.Application.Services.Products.Commands.ProductStatusCha
 using FinalProject_Store.Application.Services.Products.Commands.RemoveProduct;
 using FinalProject_Store.Application.Services.Products.Queries.GetProductDetails;
 using FinalProject_Store.Application.Services.Products.Queries.CustomerCatalog;
+using FinalProject_Store.Application.Interfaces.Storage;
+using FinalProject_Store.Application.Services.Products.Queries.GetProductImage;
+using FinalProject_Store.Infrastructures.Storage;
+using Minio;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -68,6 +72,29 @@ builder.Services.AddScoped<IProductStatusChangeService, ProductStatusChangeServi
 builder.Services.AddScoped<IRemoveProductService, RemoveProductService>();
 builder.Services.AddScoped<IGetCustomerProductsService, GetCustomerProductsService>();
 builder.Services.AddScoped<IGetCustomerProductDetailsService, GetCustomerProductDetailsService>();
+builder.Services.AddScoped<IGetProductImageService, GetProductImageService>();
+
+var minioOptions = builder.Configuration
+    .GetRequiredSection(MinioOptions.SectionName)
+    .Get<MinioOptions>() ?? throw new InvalidOperationException("پیکربندی MinIO یافت نشد.");
+if (string.IsNullOrWhiteSpace(minioOptions.Endpoint) ||
+    string.IsNullOrWhiteSpace(minioOptions.AccessKey) ||
+    string.IsNullOrWhiteSpace(minioOptions.SecretKey) ||
+    string.IsNullOrWhiteSpace(minioOptions.BucketName))
+{
+    throw new InvalidOperationException("مقادیر Endpoint، AccessKey، SecretKey و BucketName برای MinIO الزامی هستند.");
+}
+
+builder.Services.AddSingleton(minioOptions);
+builder.Services.AddSingleton<IMinioClient>(_ =>
+{
+    var client = new MinioClient()
+        .WithEndpoint(minioOptions.Endpoint)
+        .WithCredentials(minioOptions.AccessKey, minioOptions.SecretKey);
+    if (minioOptions.UseSSL) client = client.WithSSL();
+    return client.Build();
+});
+builder.Services.AddSingleton<IFileStorageService, MinioFileStorageService>();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

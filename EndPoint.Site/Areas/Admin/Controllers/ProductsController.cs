@@ -8,6 +8,7 @@ using FinalProject_Store.Application.Services.Products.Commands.RemoveProduct;
 using FinalProject_Store.Application.Services.Products.Queries.GetProductDetails;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using FinalProject_Store.Application.Services.Products.Common;
 
 namespace EndPoint.Site.Areas.Admin.Controllers
 {
@@ -67,7 +68,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(CreateProductViewModel model)
+        public async Task<IActionResult> Create(CreateProductViewModel model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
@@ -82,7 +83,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var result = _addProductService.Execute(new AddProductDto
+            await using var imageStream = model.Image?.OpenReadStream();
+            var result = await _addProductService.ExecuteAsync(new AddProductDto
             {
                 Name = model.Name,
                 Brand = model.Brand,
@@ -91,8 +93,14 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Inventory = model.Inventory,
                 CategoryId = model.CategoryId,
                 IsActive = model.IsActive,
-                ImageSrc = string.Empty
-            });
+                Image = model.Image == null ? null : new ProductImageUploadDto
+                {
+                    Content = imageStream!,
+                    Length = model.Image.Length,
+                    FileName = model.Image.FileName,
+                    ContentType = model.Image.ContentType
+                }
+            }, cancellationToken);
 
             if (!result.IsSuccess)
             {
@@ -129,7 +137,8 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Price = result.Data.Price,
                 Inventory = result.Data.Inventory,
                 CategoryId = result.Data.CategoryId,
-                IsActive = result.Data.IsActive
+                IsActive = result.Data.IsActive,
+                HasCurrentImage = !string.IsNullOrWhiteSpace(result.Data.ImageSrc)
             };
             SetCategories(model);
             return View(model);
@@ -137,24 +146,32 @@ namespace EndPoint.Site.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(EditProductViewModel model)
+        public async Task<IActionResult> Edit(EditProductViewModel model, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
+                SetCurrentImageState(model);
                 SetCategories(model);
                 return View(model);
             }
 
-            var result = _editProductService.Execute(new EditProductDto
+            await using var imageStream = model.Image?.OpenReadStream();
+            var result = await _editProductService.ExecuteAsync(new EditProductDto
             {
                 Id = model.Id, Name = model.Name, Brand = model.Brand,
                 Description = model.Description, Price = model.Price,
                 Inventory = model.Inventory, CategoryId = model.CategoryId,
-                IsActive = model.IsActive
-            });
+                IsActive = model.IsActive,
+                Image = model.Image == null ? null : new ProductImageUploadDto
+                {
+                    Content = imageStream!, Length = model.Image.Length,
+                    FileName = model.Image.FileName, ContentType = model.Image.ContentType
+                }
+            }, cancellationToken);
             if (!result.IsSuccess)
             {
                 ModelState.AddModelError(string.Empty, result.Message);
+                SetCurrentImageState(model);
                 SetCategories(model);
                 return View(model);
             }
@@ -184,6 +201,12 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 {
                     Value = category.Id.ToString(), Text = category.Name
                 }).ToList();
+        }
+
+        private void SetCurrentImageState(EditProductViewModel model)
+        {
+            var result = _getProductDetailsService.Execute(model.Id);
+            model.HasCurrentImage = result.IsSuccess && !string.IsNullOrWhiteSpace(result.Data.ImageSrc);
         }
     }
 }

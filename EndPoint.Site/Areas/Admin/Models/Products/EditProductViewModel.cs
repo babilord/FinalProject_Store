@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace EndPoint.Site.Areas.Admin.Models.Products
@@ -35,6 +36,11 @@ namespace EndPoint.Site.Areas.Admin.Models.Products
 
         [Display(Name = "فعال")]
         public bool IsActive { get; set; }
+
+        [Display(Name = "تصویر جدید (اختیاری)")]
+        public IFormFile? Image { get; set; }
+
+        public bool HasCurrentImage { get; set; }
 
         public List<SelectListItem> Categories { get; set; } = new List<SelectListItem>();
     }
