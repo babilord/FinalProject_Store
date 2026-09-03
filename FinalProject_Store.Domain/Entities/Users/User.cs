@@ -13,5 +13,6 @@ namespace FinalProject_Store.Domain.Entities.Users
         public string Password{ get; set; }
         public bool isActive {  get; set; }
         public ICollection<UserInRole> UserInRoles { get; set; }
+        public FinalProject_Store.Domain.Entities.Carts.Cart? Cart { get; set; }
     }
 }

@@ -20,6 +20,8 @@ namespace FinalProject_Store.Persistence.Contexts
         public DbSet<UserInRole> UserInRoles { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<FinalProject_Store.Domain.Entities.Carts.Cart> Carts { get; set; }
+        public DbSet<FinalProject_Store.Domain.Entities.Carts.CartItem> CartItems { get; set; }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -100,6 +102,35 @@ namespace FinalProject_Store.Persistence.Contexts
 
             modelBuilder.Entity<Product>()
                 .HasQueryFilter(product => !product.IsRemoved);
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.Cart>()
+                .HasOne(cart => cart.User)
+                .WithOne(user => user.Cart)
+                .HasForeignKey<FinalProject_Store.Domain.Entities.Carts.Cart>(cart => cart.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.Cart>()
+                .HasIndex(cart => cart.UserId).IsUnique();
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.CartItem>()
+                .HasOne(item => item.Cart)
+                .WithMany(cart => cart.Items)
+                .HasForeignKey(item => item.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.CartItem>()
+                .HasOne(item => item.Product)
+                .WithMany()
+                .HasForeignKey(item => item.ProductId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.CartItem>()
+                .HasIndex(item => new { item.CartId, item.ProductId }).IsUnique();
+
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.Cart>()
+                .HasQueryFilter(cart => !cart.IsRemoved);
+            modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.CartItem>()
+                .HasQueryFilter(item => !item.IsRemoved);
         }
     }
 }

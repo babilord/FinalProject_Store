@@ -1,0 +1,92 @@
+@using FinalProject_Store.Application.Services.Carts
+@model CartDto
+@{
+    ViewData["Title"] = "سبد خرید";
+}
+
+<main class="main-content dt-sl mb-3">
+    <div class="container main-container py-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h1 class="h4 mb-0">سبد خرید شما</h1>
+            <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">ادامه خرید</a>
+        </div>
+
+        @if (TempData["CartSuccess"] is string success)
+        { <div class="alert alert-success">@success</div> }
+        @if (TempData["CartError"] is string error)
+        { <div class="alert alert-danger">@error</div> }
+        @if (TempData["CartInfo"] is string info)
+        { <div class="alert alert-warning">@info</div> }
+
+        @if (!Model.Items.Any())
+        {
+            <section class="card border-0 shadow-sm text-center p-5 cart-empty">
+                <i class="mdi mdi-cart-outline"></i>
+                <h2 class="h5 mt-3">سبد خرید شما خالی است</h2>
+                <p class="text-muted">می‌توانید از میان کالاهای موجود، محصول دلخواهتان را انتخاب کنید.</p>
+                <div><a asp-controller="Products" asp-action="Index" class="btn btn-info">مشاهده محصولات</a></div>
+            </section>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-lg-8">
+                    @foreach (var item in Model.Items)
+                    {
+                        <article class="card border-0 shadow-sm mb-3 cart-item">
+                            <div class="card-body">
+                                <div class="row align-items-center">
+                                    <div class="col-sm-3 text-center mb-3 mb-sm-0">
+                                        @if (item.HasImage)
+                                        { <img src="@Url.Action("Image", "Products", new { id = item.ProductId })" class="cart-image" alt="@item.ProductName" /> }
+                                        else
+                                        { <span class="cart-image-placeholder"><i class="mdi mdi-image-off"></i></span> }
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <a asp-controller="Products" asp-action="Details" asp-route-id="@item.ProductId" class="h6 d-block text-dark">@item.ProductName</a>
+                                        @if (!string.IsNullOrWhiteSpace(item.Brand)) { <div class="text-muted small mb-2">برند: @item.Brand</div> }
+                                        <div class="mb-3">قیمت واحد: <strong>@item.UnitPrice.ToString("N0") تومان</strong></div>
+                                        <div class="d-flex flex-wrap align-items-center justify-content-between">
+                                            <form asp-action="UpdateQuantity" method="post" class="d-flex align-items-center mb-2">
+                                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                                <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-sm btn-outline-secondary" @(item.Quantity <= 1 ? "disabled" : null)>−</button>
+                                                <span class="cart-quantity">@item.Quantity</span>
+                                                <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-sm btn-outline-secondary" @(item.Quantity >= item.AvailableInventory ? "disabled" : null)>+</button>
+                                                <small class="text-muted mr-2">از @item.AvailableInventory موجود</small>
+                                            </form>
+                                            <div class="mb-2"><strong class="text-danger">@item.LineTotal.ToString("N0") تومان</strong></div>
+                                            <form asp-action="Remove" method="post" class="mb-2">
+                                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="mdi mdi-delete"></i> حذف</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                    }
+                </div>
+                <aside class="col-lg-4">
+                    <div class="card border-0 shadow-sm cart-summary">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>مبلغ کل سبد خرید</span>
+                                <strong class="text-danger h5 mb-0">@Model.Total.ToString("N0") تومان</strong>
+                            </div>
+                            <small class="text-muted d-block mt-3">موجودی و قیمت کالاها در مرحله ثبت سفارش دوباره بررسی خواهد شد.</small>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        }
+    </div>
+</main>
+
+<style>
+    .cart-empty, .cart-item, .cart-summary { border-radius: 12px; }
+    .cart-empty > i { font-size: 76px; color: #00bfd6; }
+    .cart-image { width: 120px; height: 120px; object-fit: contain; }
+    .cart-image-placeholder { width: 120px; height: 120px; display: inline-flex; align-items: center; justify-content: center; background: #f5f5f5; color: #aaa; font-size: 42px; border-radius: 8px; }
+    .cart-quantity { min-width: 42px; text-align: center; font-weight: bold; }
+    @@media (min-width: 992px) { .cart-summary { position: sticky; top: 20px; } }
+</style>
