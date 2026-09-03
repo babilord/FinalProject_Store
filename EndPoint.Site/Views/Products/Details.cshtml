@@ -59,6 +59,18 @@
                             <small class="text-muted mr-2">(@Model.Inventory عدد)</small>
                         </div>
                         <div class="detail-price mb-4">@Model.Price.ToString("N0") <small>تومان</small></div>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <form asp-controller="Cart" asp-action="Add" method="post" class="d-inline-block ml-2">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <input type="hidden" name="quantity" value="1" />
+                                <button type="submit" class="btn btn-info"><i class="mdi mdi-cart-plus ml-1"></i> افزودن به سبد خرید</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Authentication" asp-action="Login" asp-route-returnUrl="@Url.Action("Details", "Products", new { id = Model.Id })" class="btn btn-info ml-2"><i class="mdi mdi-cart-plus ml-1"></i> افزودن به سبد خرید</a>
+                        }
                         <a asp-controller="Products" asp-action="Index" class="btn btn-outline-secondary">
                             <i class="fa fa-arrow-right ml-1"></i> بازگشت به محصولات
                         </a>
@@ -84,6 +96,11 @@
         </article>
     </div>
 </main>
+
+@if (TempData["CartSuccess"] is string cartSuccess)
+{ <div class="container"><div class="alert alert-success">@cartSuccess <a asp-controller="Cart" asp-action="Index" class="alert-link">مشاهده سبد خرید</a></div></div> }
+@if (TempData["CartError"] is string cartError)
+{ <div class="container"><div class="alert alert-danger">@cartError</div></div> }
 
 <style>
     .product-detail-card { border-radius: 12px; }

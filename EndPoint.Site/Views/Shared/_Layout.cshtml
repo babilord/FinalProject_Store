@@ -825,18 +825,17 @@
                             </li>
                             <li class="divider-space-card">
                                 <div class="header-cart-basket">
-                                    <a href="#" class="cart-basket-box">
+                                    <a asp-controller="Cart" asp-action="Index" class="cart-basket-box">
                                         <span class="icon-cart">
                                             <i class="mdi mdi-shopping"></i>
                                         </span>
                                         <span class="title-cart">سبد خرید</span>
                                         <span class="price-cart">
-                                            25,000,000
-                                            <span>تومان</span>
+                                            مشاهده سبد
                                         </span>
-                                        <span class="count-cart">2</span>
+                                        <span class="count-cart"><i class="mdi mdi-chevron-left"></i></span>
                                     </a>
-                                    <div class="widget-shopping-cart">
+                                    <div class="widget-shopping-cart" style="display:none">
                                         <div class="widget-shopping-cart-content">
                                             <div class="wrapper">
                                                 <div class="scrollbar" id="style-1">
@@ -1095,10 +1094,9 @@
                         </a>
                     </li>
                     <li>
-                        <a href="cart.html">
+                        <a asp-controller="Cart" asp-action="Index">
                             <i class="mdi mdi-cart"></i>
                             سبد خرید
-                            <div class="shopping-bag-item">2</div>
                         </a>
                     </li>
                     <li>

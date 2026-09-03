@@ -16,6 +16,10 @@ namespace FinalProject_Store.Application.Interfaces.Contexts
 
         DbSet<Product> Products { get; set; }
 
+        DbSet<FinalProject_Store.Domain.Entities.Carts.Cart> Carts { get; set; }
+
+        DbSet<FinalProject_Store.Domain.Entities.Carts.CartItem> CartItems { get; set; }
+
         int SaveChanges();
 
         int SaveChanges(bool acceptAllChangesOnSuccess);
