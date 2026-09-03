@@ -6,7 +6,7 @@
 <div class="container-fluid"><div class="row"><div class="col-12"><div class="card">
     <div class="card-header"><h4 class="card-title">ویرایش محصول</h4></div>
     <div class="card-body">
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()<input asp-for="Id" type="hidden" />
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <div class="row">
@@ -16,6 +16,20 @@
                 <div class="col-md-3"><div class="form-group mb-3"><label asp-for="Price"></label><input asp-for="Price" class="form-control" type="number" min="1" step="0.01" /><span asp-validation-for="Price" class="text-danger"></span></div></div>
                 <div class="col-md-3"><div class="form-group mb-3"><label asp-for="Inventory"></label><input asp-for="Inventory" class="form-control" type="number" min="0" /><span asp-validation-for="Inventory" class="text-danger"></span></div></div>
                 <div class="col-md-6 d-flex align-items-center"><div class="form-check mt-3"><input asp-for="IsActive" class="form-check-input" /><label asp-for="IsActive" class="form-check-label"></label></div></div>
+                <div class="col-md-6"><div class="form-group mb-3">
+                    <label asp-for="Image"></label>
+                    <input asp-for="Image" class="form-control" type="file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+                    <small class="form-text text-muted">فرمت‌های JPG، PNG یا WEBP، حداکثر ۵ مگابایت. انتخاب فایل جدید اختیاری است.</small>
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div></div>
+                @if (Model.HasCurrentImage)
+                {
+                    <div class="col-md-6"><div class="form-group mb-3">
+                        <label>تصویر فعلی</label>
+                        <div><img asp-area="" asp-controller="Products" asp-action="Image" asp-route-id="@Model.Id"
+                                  alt="@Model.Name" class="img-thumbnail" style="max-width:220px;max-height:220px;object-fit:contain" /></div>
+                    </div></div>
+                }
                 <div class="col-12"><div class="form-group mb-3"><label asp-for="Description"></label><textarea asp-for="Description" class="form-control" rows="5"></textarea><span asp-validation-for="Description" class="text-danger"></span></div></div>
             </div>
             <button type="submit" class="btn btn-success">ذخیره تغییرات</button>

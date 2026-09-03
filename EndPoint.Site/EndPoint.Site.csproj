@@ -4,6 +4,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>FinalProject-Store-Development</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FinalProject_Store.Application\FinalProject_Store.Application.csproj" />
+    <ProjectReference Include="..\FinalProject_Store.Infrastructures\FinalProject_Store.Infrastructures.csproj" />
     <ProjectReference Include="..\FinalProject_Store.Persistence\FinalProject_Store.Persistence.csproj" />
   </ItemGroup>
 

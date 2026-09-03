@@ -115,7 +115,9 @@
                                     <input asp-for="Image"
                                            class="form-control"
                                            type="file"
-                                           accept="image/*" />
+                                           accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+
+                                    <small class="form-text text-muted">فرمت‌های JPG، PNG یا WEBP، حداکثر ۵ مگابایت</small>
 
                                     <span asp-validation-for="Image"
                                           class="text-danger">

@@ -2,19 +2,23 @@
 using FinalProject_Store.Common.Dto;
 using FinalProject_Store.Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
+using FinalProject_Store.Application.Interfaces.Storage;
+using FinalProject_Store.Application.Services.Products.Common;
 
 namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
 {
     public class AddProductService : IAddProductService
     {
         private readonly IDataBaseContext _context;
+        private readonly IFileStorageService _fileStorageService;
 
-        public AddProductService(IDataBaseContext context)
+        public AddProductService(IDataBaseContext context, IFileStorageService fileStorageService)
         {
             _context = context;
+            _fileStorageService = fileStorageService;
         }
 
-        public ResultDto Execute(AddProductDto request)
+        public async Task<ResultDto> ExecuteAsync(AddProductDto request, CancellationToken cancellationToken = default)
         {
             if (request == null)
             {
@@ -25,10 +29,9 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 };
             }
 
-            request.Name = request.Name?.Trim();
-            request.Brand = request.Brand?.Trim();
-            request.Description = request.Description?.Trim();
-            request.ImageSrc = request.ImageSrc?.Trim();
+            request.Name = request.Name?.Trim() ?? string.Empty;
+            request.Brand = request.Brand?.Trim() ?? string.Empty;
+            request.Description = request.Description?.Trim() ?? string.Empty;
 
             if (string.IsNullOrWhiteSpace(request.Name))
             {
@@ -55,7 +58,6 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
 
             request.Brand ??= string.Empty;
             request.Description ??= string.Empty;
-            request.ImageSrc ??= string.Empty;
 
             if (request.Brand.Length > 200)
             {
@@ -94,11 +96,11 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 };
             }
 
-            var categoryExists = _context.Categories
+            var categoryExists = await _context.Categories
                 .AsNoTracking()
-                .Any(category =>
+                .AnyAsync(category =>
                     category.Id == request.CategoryId &&
-                    category.IsActive);
+                    category.IsActive, cancellationToken);
 
             if (!categoryExists)
             {
@@ -109,12 +111,12 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 };
             }
 
-            var duplicateProductExists = _context.Products
+            var duplicateProductExists = await _context.Products
                 .IgnoreQueryFilters()
-                .Any(product =>
+                .AnyAsync(product =>
                     product.Name == request.Name &&
                     product.Brand == request.Brand &&
-                    product.IsRemoved == false);
+                    product.IsRemoved == false, cancellationToken);
 
             if (duplicateProductExists)
             {
@@ -125,6 +127,29 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 };
             }
 
+            var imageObjectKey = string.Empty;
+            if (request.Image != null)
+            {
+                var imageValidation = await ProductImageValidator.ValidateAsync(request.Image, cancellationToken);
+                if (!imageValidation.IsSuccess)
+                    return new ResultDto { IsSuccess = false, Message = imageValidation.Message };
+
+                imageObjectKey = $"products/{Guid.NewGuid():N}{imageValidation.Data}";
+                try
+                {
+                    await _fileStorageService.UploadAsync(
+                        imageObjectKey,
+                        request.Image.Content,
+                        request.Image.Length,
+                        request.Image.ContentType,
+                        cancellationToken);
+                }
+                catch
+                {
+                    return new ResultDto { IsSuccess = false, Message = "بارگذاری تصویر محصول انجام نشد. لطفاً دوباره تلاش کنید." };
+                }
+            }
+
             var product = new Product
             {
                 Name = request.Name,
@@ -132,14 +157,27 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 Description = request.Description,
                 Price = request.Price,
                 Inventory = request.Inventory,
-                ImageSrc = request.ImageSrc,
+                ImageSrc = imageObjectKey,
                 IsActive = request.IsActive,
                 CategoryId = request.CategoryId,
                 InsertTime = DateTime.Now
             };
 
-            _context.Products.Add(product);
-            _context.SaveChanges();
+            try
+            {
+                _context.Products.Add(product);
+                await _context.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                if (!string.IsNullOrWhiteSpace(imageObjectKey))
+                {
+                    try { await _fileStorageService.DeleteAsync(imageObjectKey, cancellationToken); }
+                    catch { }
+                }
+
+                return new ResultDto { IsSuccess = false, Message = "ثبت محصول انجام نشد. لطفاً دوباره تلاش کنید." };
+            }
 
             return new ResultDto
             {

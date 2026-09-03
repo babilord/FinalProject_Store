@@ -21,13 +21,27 @@
                         <div class="detail-image-box">
                             @if (string.IsNullOrWhiteSpace(Model.ImageSrc))
                             {
-                                <span class="detail-placeholder" role="img" aria-label="تصویر محصول موجود نیست">
-                                    <i class="mdi mdi-image-off"></i><span>تصویری برای این محصول ثبت نشده است</span>
+                                <span class="detail-placeholder"
+                                      role="img"
+                                      aria-label="تصویر محصول موجود نیست">
+                                    <i class="mdi mdi-image-off"></i>
+                                    <span>تصویری برای این محصول ثبت نشده است</span>
                                 </span>
                             }
                             else
                             {
-                                <img src="@Model.ImageSrc" class="img-fluid detail-product-image" alt="@Model.Name" />
+                                <img src="@Url.Action("Image", "Products", new { id = Model.Id })"
+                                     class="img-fluid detail-product-image"
+                                     alt="@Model.Name"
+                                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex';" />
+
+                                <span class="detail-placeholder"
+                                      style="display:none"
+                                      role="img"
+                                      aria-label="تصویر محصول موجود نیست">
+                                    <i class="mdi mdi-image-off"></i>
+                                    <span>تصویر محصول در دسترس نیست</span>
+                                </span>
                             }
                         </div>
                     </div>

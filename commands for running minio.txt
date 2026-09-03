@@ -1,0 +1,4 @@
+run: docker compose up -d
+Username, passworde miniom: babilord, hamishegi, ruye in url: http://localhost:9001
+
+testesh : docker compose up -d
