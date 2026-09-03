@@ -1,0 +1,5 @@
+start minio into powershell folderProject: docker compose up -d
+test minio: docker compose up -d
+
+ip minio: http://localhost:9001
+username: babilord, password: hamishegi
