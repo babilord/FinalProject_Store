@@ -27,6 +27,7 @@ using FinalProject_Store.Application.Services.Products.Queries.GetProductImage;
 using FinalProject_Store.Infrastructures.Storage;
 using Minio;
 using FinalProject_Store.Application.Services.Carts;
+using FinalProject_Store.Application.Services.Orders;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -75,6 +76,7 @@ builder.Services.AddScoped<IGetCustomerProductsService, GetCustomerProductsServi
 builder.Services.AddScoped<IGetCustomerProductDetailsService, GetCustomerProductDetailsService>();
 builder.Services.AddScoped<IGetProductImageService, GetProductImageService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var minioOptions = builder.Configuration
     .GetRequiredSection(MinioOptions.SectionName)

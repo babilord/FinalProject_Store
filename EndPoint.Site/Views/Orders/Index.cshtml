@@ -1,0 +1,8 @@
+@using FinalProject_Store.Application.Services.Orders
+@using FinalProject_Store.Domain.Entities.Orders
+@model List<OrderListItemDto>
+@{ ViewData["Title"] = "سفارش‌های من"; string StatusText(OrderStatus s) => s switch { OrderStatus.PendingPayment => "در انتظار پرداخت", OrderStatus.Paid => "پرداخت‌شده", OrderStatus.Cancelled => "لغوشده", _ => s.ToString() }; }
+<main class="main-content dt-sl mb-3"><div class="container main-container py-4"><h1 class="h4 mb-4">سفارش‌های من</h1>
+@if(!Model.Any()){<div class="card border-0 shadow-sm text-center p-5"><p>هنوز سفارشی ثبت نکرده‌اید.</p><a asp-controller="Products" asp-action="Index" class="btn btn-info">مشاهده محصولات</a></div>}
+else{<div class="card border-0 shadow-sm"><div class="table-responsive"><table class="table mb-0 text-center"><thead><tr><th>شماره سفارش</th><th>تاریخ</th><th>مبلغ</th><th>وضعیت</th><th></th></tr></thead><tbody>@foreach(var order in Model){<tr><td>@order.Id</td><td>@order.InsertTime.ToString("yyyy/MM/dd HH:mm")</td><td>@order.Total.ToString("N0") تومان</td><td>@StatusText(order.Status)</td><td><a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-info">جزئیات</a></td></tr>}</tbody></table></div></div>}
+</div></main>
