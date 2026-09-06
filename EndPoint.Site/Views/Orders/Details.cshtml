@@ -1,0 +1,11 @@
+@using FinalProject_Store.Application.Services.Orders
+@using FinalProject_Store.Domain.Entities.Orders
+@model OrderDetailsDto
+@{ ViewData["Title"] = "جزئیات سفارش"; string StatusText(OrderStatus s) => s switch { OrderStatus.PendingPayment => "در انتظار پرداخت", OrderStatus.Paid => "پرداخت‌شده", OrderStatus.Cancelled => "لغوشده", _ => s.ToString() }; }
+<main class="main-content dt-sl mb-3"><div class="container main-container py-4">
+ @if (TempData["OrderSuccess"] is string success) { <div class="alert alert-success">@success</div> }
+ <div class="d-flex justify-content-between mb-3"><h1 class="h4">سفارش شماره @Model.Id</h1><a asp-action="Index" class="btn btn-outline-secondary">سفارش‌های من</a></div>
+ <div class="card border-0 shadow-sm mb-3"><div class="card-body"><div class="row"><div class="col-md-4"><strong>وضعیت:</strong> @StatusText(Model.Status)</div><div class="col-md-4"><strong>تاریخ:</strong> @Model.InsertTime.ToString("yyyy/MM/dd HH:mm")</div><div class="col-md-4"><strong>مبلغ:</strong> <span class="text-danger">@Model.Total.ToString("N0") تومان</span></div></div></div></div>
+ <div class="card border-0 shadow-sm mb-3"><div class="card-body"><h2 class="h5">اقلام سفارش</h2>@foreach(var item in Model.Items){<div class="d-flex align-items-center border-bottom py-3"><img src="@Url.Action("Image", "Products", new { id=item.ProductId })" alt="@item.ProductName" style="width:72px;height:72px;object-fit:contain" class="ml-3"/><div><strong>@item.ProductName</strong><div>@item.Quantity عدد × @item.UnitPrice.ToString("N0") تومان</div><div class="text-danger">@item.LineTotal.ToString("N0") تومان</div></div></div>}</div></div>
+ <div class="card border-0 shadow-sm"><div class="card-body"><h2 class="h5">اطلاعات ارسال و تماس</h2><p><strong>تحویل‌گیرنده:</strong> @Model.FullName</p><p><strong>موبایل:</strong> <span dir="ltr">@Model.MobileNumber</span></p><p><strong>نشانی:</strong> @Model.Province، @Model.City، @Model.PostalAddress</p><p><strong>کد پستی:</strong> <span dir="ltr">@Model.PostalCode</span></p>@if(!string.IsNullOrWhiteSpace(Model.Notes)){<p><strong>توضیحات:</strong> @Model.Notes</p>}</div></div>
+</div></main>

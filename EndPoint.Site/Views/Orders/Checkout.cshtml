@@ -1,0 +1,37 @@
+@using EndPoint.Site.Controllers
+@model CheckoutViewModel
+@{ ViewData["Title"] = "تکمیل سفارش"; }
+
+<main class="main-content dt-sl mb-3">
+ <div class="container main-container py-4">
+  <h1 class="h4 mb-4">تکمیل و ثبت سفارش</h1>
+  <div class="row">
+   <div class="col-lg-7">
+    <div class="card border-0 shadow-sm mb-3"><div class="card-body">
+     <h2 class="h5 mb-4">اطلاعات تحویل‌گیرنده</h2>
+     <form asp-action="Checkout" method="post">
+      <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+      <div class="form-group"><label asp-for="Input.FullName">نام و نام خانوادگی</label><input asp-for="Input.FullName" class="form-control" autocomplete="name" /><span asp-validation-for="Input.FullName" class="text-danger"></span></div>
+      <div class="form-group"><label asp-for="Input.MobileNumber">شماره موبایل</label><input asp-for="Input.MobileNumber" class="form-control" dir="ltr" inputmode="numeric" autocomplete="tel" /><span asp-validation-for="Input.MobileNumber" class="text-danger"></span></div>
+      <div class="row"><div class="col-md-6 form-group"><label asp-for="Input.Province">استان</label><input asp-for="Input.Province" class="form-control" /><span asp-validation-for="Input.Province" class="text-danger"></span></div><div class="col-md-6 form-group"><label asp-for="Input.City">شهر</label><input asp-for="Input.City" class="form-control" /><span asp-validation-for="Input.City" class="text-danger"></span></div></div>
+      <div class="form-group"><label asp-for="Input.PostalAddress">نشانی پستی</label><textarea asp-for="Input.PostalAddress" class="form-control" rows="3" autocomplete="street-address"></textarea><span asp-validation-for="Input.PostalAddress" class="text-danger"></span></div>
+      <div class="form-group"><label asp-for="Input.PostalCode">کد پستی</label><input asp-for="Input.PostalCode" class="form-control" dir="ltr" inputmode="numeric" autocomplete="postal-code" /><span asp-validation-for="Input.PostalCode" class="text-danger"></span></div>
+      <div class="form-group"><label asp-for="Input.Notes">توضیحات (اختیاری)</label><textarea asp-for="Input.Notes" class="form-control" rows="2"></textarea><span asp-validation-for="Input.Notes" class="text-danger"></span></div>
+      <button type="submit" class="btn btn-info btn-lg btn-block">ثبت سفارش</button>
+     </form>
+    </div></div>
+   </div>
+   <aside class="col-lg-5"><div class="card border-0 shadow-sm"><div class="card-body">
+    <h2 class="h5 mb-3">خلاصه سفارش</h2>
+    @foreach (var item in Model.Summary.Items) {
+     <div class="d-flex border-bottom py-3 align-items-center">
+      @if (item.HasImage) { <img src="@Url.Action("Image", "Products", new { id = item.ProductId })" alt="@item.ProductName" style="width:72px;height:72px;object-fit:contain" class="ml-3" /> }
+      <div class="flex-grow-1"><strong>@item.ProductName</strong><div class="small text-muted">@item.Quantity عدد × @item.UnitPrice.ToString("N0") تومان</div><div>@item.LineTotal.ToString("N0") تومان</div></div>
+     </div>
+    }
+    <div class="d-flex justify-content-between pt-3"><strong>مبلغ نهایی</strong><strong class="text-danger">@Model.Summary.Total.ToString("N0") تومان</strong></div>
+   </div></div></aside>
+  </div>
+ </div>
+</main>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
