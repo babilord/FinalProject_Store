@@ -90,7 +90,7 @@ public class OrderService : IOrderService
 
     public ResultDto<OrderDetailsDto> GetDetails(long userId, long orderId)
     {
-        var order = _context.Orders.AsNoTracking().Include(x => x.Items)
+        var order = _context.Orders.AsNoTracking().Include(x => x.Items).Include(x => x.Payments)
             .SingleOrDefault(x => x.Id == orderId && x.UserId == userId);
         if (order == null) return Fail<OrderDetailsDto>("سفارش موردنظر یافت نشد.");
 
@@ -100,6 +100,8 @@ public class OrderService : IOrderService
             FullName = order.FullName, MobileNumber = order.MobileNumber, Province = order.Province,
             City = order.City, PostalAddress = order.PostalAddress, PostalCode = order.PostalCode,
             Notes = order.Notes,
+            LastPaymentStatus = order.Payments.OrderByDescending(x => x.Id).Select(x => (FinalProject_Store.Domain.Entities.Payments.PaymentStatus?)x.Status).FirstOrDefault(),
+            PaymentReference = order.Payments.FirstOrDefault(x => x.Status == FinalProject_Store.Domain.Entities.Payments.PaymentStatus.Succeeded)?.ReferenceId,
             Items = order.Items.OrderBy(x => x.Id).Select(x => new OrderItemDto
             {
                 ProductId = x.ProductId, ProductName = x.ProductName, UnitPrice = x.UnitPrice,
@@ -188,5 +190,5 @@ public class CreateOrderDto : IValidatableObject
 public class CheckoutDto { public List<CheckoutItemDto> Items { get; set; } = new(); public decimal Total => Items.Sum(x => x.LineTotal); }
 public class CheckoutItemDto { public long ProductId { get; set; } public string ProductName { get; set; } = ""; public bool HasImage { get; set; } public decimal UnitPrice { get; set; } public int Quantity { get; set; } public decimal LineTotal => UnitPrice * Quantity; }
 public class OrderItemDto : CheckoutItemDto { public new decimal LineTotal { get; set; } }
-public class OrderDetailsDto : CreateOrderDto { public long Id { get; set; } public DateTime InsertTime { get; set; } public OrderStatus Status { get; set; } public decimal Total { get; set; } public List<OrderItemDto> Items { get; set; } = new(); }
+public class OrderDetailsDto : CreateOrderDto { public FinalProject_Store.Domain.Entities.Payments.PaymentStatus? LastPaymentStatus { get; set; } public string? PaymentReference { get; set; } public long Id { get; set; } public DateTime InsertTime { get; set; } public OrderStatus Status { get; set; } public decimal Total { get; set; } public List<OrderItemDto> Items { get; set; } = new(); }
 public class OrderListItemDto { public long Id { get; set; } public DateTime InsertTime { get; set; } public decimal Total { get; set; } public OrderStatus Status { get; set; } }
