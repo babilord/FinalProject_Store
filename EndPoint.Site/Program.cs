@@ -29,6 +29,10 @@ using Minio;
 using FinalProject_Store.Application.Services.Carts;
 using FinalProject_Store.Application.Services.Orders;
 
+using FinalProject_Store.Application.Interfaces.Payments;
+using FinalProject_Store.Application.Services.Payments;
+using FinalProject_Store.Infrastructures.Payments;
+
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -77,6 +81,10 @@ builder.Services.AddScoped<IGetCustomerProductDetailsService, GetCustomerProduct
 builder.Services.AddScoped<IGetProductImageService, GetProductImageService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddDataProtection();
+builder.Services.AddScoped<FakePaymentGateway>();
+builder.Services.AddScoped<IPaymentGateway>(provider => provider.GetRequiredService<FakePaymentGateway>());
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var minioOptions = builder.Configuration
     .GetRequiredSection(MinioOptions.SectionName)

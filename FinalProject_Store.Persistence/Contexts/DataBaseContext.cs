@@ -1,4 +1,5 @@
-﻿using System;
+using FinalProject_Store.Domain.Entities.Payments;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace FinalProject_Store.Persistence.Contexts
         public DbSet<Product> Products { get; set; }
         public DbSet<FinalProject_Store.Domain.Entities.Carts.Cart> Carts { get; set; }
         public DbSet<FinalProject_Store.Domain.Entities.Carts.CartItem> CartItems { get; set; }
+        public DbSet<FinalProject_Store.Domain.Entities.Payments.Payment> Payments { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
@@ -138,6 +140,21 @@ namespace FinalProject_Store.Persistence.Contexts
                 .HasQueryFilter(cart => !cart.IsRemoved);
             modelBuilder.Entity<FinalProject_Store.Domain.Entities.Carts.CartItem>()
                 .HasQueryFilter(item => !item.IsRemoved);
+
+            modelBuilder.Entity<Payment>().Property(x => x.Amount).HasPrecision(18, 2);
+            modelBuilder.Entity<Payment>().Property(x => x.Gateway).IsRequired().HasMaxLength(50);
+            modelBuilder.Entity<Payment>().Property(x => x.Token).IsRequired().HasMaxLength(200);
+            modelBuilder.Entity<Payment>().Property(x => x.RedirectUrl).IsRequired().HasMaxLength(2000);
+            modelBuilder.Entity<Payment>().Property(x => x.ReferenceId).HasMaxLength(200);
+            modelBuilder.Entity<Payment>().HasOne(x => x.Order).WithMany(x => x.Payments)
+                .HasForeignKey(x => x.OrderId).OnDelete(DeleteBehavior.Restrict);
+            modelBuilder.Entity<Payment>().HasIndex(x => x.Token).IsUnique();
+            modelBuilder.Entity<Payment>().HasIndex(x => new { x.OrderId, x.Status });
+            modelBuilder.Entity<Payment>().HasIndex(x => x.OrderId, "IX_Payments_PendingOrder")
+                .IsUnique().HasFilter("[Status] = 1");
+            modelBuilder.Entity<Payment>().HasIndex(x => x.OrderId, "IX_Payments_SucceededOrder")
+                .IsUnique().HasFilter("[Status] = 2");
+            modelBuilder.Entity<Payment>().HasQueryFilter(x => !x.IsRemoved);
 
             modelBuilder.Entity<Order>().Property(x => x.Total).HasPrecision(18, 2);
             modelBuilder.Entity<Order>().Property(x => x.FullName).IsRequired().HasMaxLength(200);

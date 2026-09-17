@@ -16,5 +16,6 @@ public class Order : BaseEntity
     public string PostalAddress { get; set; } = string.Empty;
     public string PostalCode { get; set; } = string.Empty;
     public string? Notes { get; set; }
+    public ICollection<FinalProject_Store.Domain.Entities.Payments.Payment> Payments { get; set; } = new List<FinalProject_Store.Domain.Entities.Payments.Payment>();
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 }
