@@ -13,6 +13,7 @@ namespace FinalProject_Store.Domain.Entities.Products
         public decimal Price { get; set; }
 
         public int Inventory { get; set; }
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
         public string ImageSrc { get; set; }
 

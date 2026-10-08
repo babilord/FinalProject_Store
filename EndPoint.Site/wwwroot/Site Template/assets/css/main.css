@@ -149,7 +149,8 @@ header.header-main {
     background: #fff;
     z-index: 999;
     position: relative;
-    float: right;
+    /* Contain floated header rows while keeping page content below the header. */
+    display: flow-root;
 }
 
 .header-logo {

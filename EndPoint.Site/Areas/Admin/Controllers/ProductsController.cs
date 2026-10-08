@@ -135,7 +135,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
                 Brand = result.Data.Brand,
                 Description = result.Data.Description,
                 Price = result.Data.Price,
-                Inventory = result.Data.Inventory,
+                Inventory = result.Data.Inventory, RowVersion = result.Data.RowVersion,
                 CategoryId = result.Data.CategoryId,
                 IsActive = result.Data.IsActive,
                 HasCurrentImage = !string.IsNullOrWhiteSpace(result.Data.ImageSrc)
@@ -160,7 +160,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
             {
                 Id = model.Id, Name = model.Name, Brand = model.Brand,
                 Description = model.Description, Price = model.Price,
-                Inventory = model.Inventory, CategoryId = model.CategoryId,
+                Inventory = model.Inventory, RowVersion = model.RowVersion, CategoryId = model.CategoryId,
                 IsActive = model.IsActive,
                 Image = model.Image == null ? null : new ProductImageUploadDto
                 {

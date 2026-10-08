@@ -31,6 +31,12 @@ namespace FinalProject_Store.Persistence.Contexts
         public DbSet<OrderItem> OrderItems { get; set; }
 
         public IDbContextTransaction BeginTransaction(IsolationLevel isolationLevel) => Database.BeginTransaction(isolationLevel);
+        public void ClearTracking() => ChangeTracker.Clear();
+        public void LockOrder(long orderId)
+        {
+            if (Database.CurrentTransaction == null) throw new InvalidOperationException("Order lock requires a transaction.");
+            Database.ExecuteSqlInterpolated($"SELECT [Id] FROM [Orders] WITH (UPDLOCK, HOLDLOCK) WHERE [Id] = {orderId}");
+        }
 
         public override int SaveChanges(bool acceptAllChangesOnSuccess)
         {
@@ -46,6 +52,9 @@ namespace FinalProject_Store.Persistence.Contexts
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Product>().Property(x => x.RowVersion).IsRowVersion();
+            modelBuilder.Entity<Product>().ToTable(t => t.HasCheckConstraint("CK_Products_Inventory", "[Inventory] >= 0"));
+            modelBuilder.Entity<Order>().HasIndex(x => new { x.Status, x.ExpiresAtUtc });
             modelBuilder.Entity<Role>().HasData(
                 new Role
                 {

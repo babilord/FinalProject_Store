@@ -35,6 +35,9 @@ namespace FinalProject_Store.Application.Services.Products.Commands.EditProduct
             var product = await _context.Products.FirstOrDefaultAsync(item => item.Id == request.Id, cancellationToken);
             if (product == null) return Failure("محصول موردنظر پیدا نشد.");
 
+            if (request.RowVersion == null || !product.RowVersion.SequenceEqual(request.RowVersion))
+                return Failure("محصول یا موجودی تغییر کرده است؛ صفحه را تازه‌سازی و دوباره ویرایش کنید.");
+
             var categoryExists = await _context.Categories.AsNoTracking()
                 .AnyAsync(category => category.Id == request.CategoryId && category.IsActive, cancellationToken);
             if (!categoryExists) return Failure("دسته‌بندی انتخاب‌شده معتبر یا فعال نیست.");
@@ -77,14 +80,17 @@ namespace FinalProject_Store.Application.Services.Products.Commands.EditProduct
             {
                 await _context.SaveChangesAsync(cancellationToken);
             }
-            catch
+            catch (Exception ex)
             {
+                _context.ClearTracking();
                 if (!string.IsNullOrWhiteSpace(newImageObjectKey))
                 {
                     try { await _fileStorageService.DeleteAsync(newImageObjectKey, cancellationToken); }
                     catch { }
                 }
-                return Failure("ویرایش محصول انجام نشد؛ تصویر قبلی حفظ شده است.");
+                return Failure(ex is DbUpdateConcurrencyException
+                    ? "محصول یا موجودی تغییر کرده است؛ صفحه را تازه‌سازی و دوباره ویرایش کنید."
+                    : "ویرایش محصول انجام نشد؛ تصویر قبلی حفظ شده است.");
             }
 
             if (!string.IsNullOrWhiteSpace(newImageObjectKey) && !string.IsNullOrWhiteSpace(oldImageObjectKey))
@@ -103,7 +109,7 @@ namespace FinalProject_Store.Application.Services.Products.Commands.EditProduct
             if (request.Name.Length > 300) return Failure("نام محصول نمی‌تواند بیشتر از ۳۰۰ کاراکتر باشد.");
             if (request.Brand.Length > 200) return Failure("نام برند نمی‌تواند بیشتر از ۲۰۰ کاراکتر باشد.");
             if (request.Description.Length > 4000) return Failure("توضیحات نمی‌تواند بیشتر از ۴۰۰۰ کاراکتر باشد.");
-            if (request.Price <= 0) return Failure("قیمت محصول باید بیشتر از صفر باشد.");
+            if (request.Price <= 0 || request.Price > 9999999999999999.99m || decimal.Round(request.Price, 2) != request.Price) return Failure("قیمت باید مثبت، حداکثر ۱۶ رقم و دارای حداکثر دو رقم اعشار باشد.");
             if (request.Inventory < 0) return Failure("موجودی محصول نمی‌تواند منفی باشد.");
             if (request.CategoryId <= 0) return Failure("دسته‌بندی محصول را انتخاب کنید.");
             return null;
@@ -120,6 +126,7 @@ namespace FinalProject_Store.Application.Services.Products.Commands.EditProduct
         public string Description { get; set; } = string.Empty;
         public decimal Price { get; set; }
         public int Inventory { get; set; }
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
         public long CategoryId { get; set; }
         public bool IsActive { get; set; }
         public ProductImageUploadDto? Image { get; set; }

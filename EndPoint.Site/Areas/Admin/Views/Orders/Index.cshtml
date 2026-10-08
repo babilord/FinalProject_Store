@@ -1,0 +1,23 @@
+@using FinalProject_Store.Application.Services.Orders
+@using FinalProject_Store.Domain.Entities.Orders
+@model PageResult<AdminOrderRow>
+@{ Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml"; ViewData["Title"] = "مدیریت سفارش‌ها"; }
+<section class="container-fluid" dir="rtl">
+ <h1 class="h4">مدیریت سفارش‌ها</h1>
+ <div class="card"><div class="card-body">
+ <form method="get" class="row align-items-end">
+  <div class="col-md-6 form-group"><label for="search">شماره سفارش، نام، ایمیل یا موبایل</label><input id="search" name="search" value="@Context.Request.Query["search"]" class="form-control" maxlength="200" /></div>
+  <div class="col-md-4 form-group"><label for="status">وضعیت سفارش</label><select id="status" name="status" class="form-control"><option value="">همه</option>@foreach(var status in Enum.GetValues<OrderStatus>()) { <option value="@status" selected="@(Context.Request.Query["status"] == status.ToString())">@OrderRules.Label(status)</option> }</select></div>
+  <div class="col-md-2 form-group"><button class="btn btn-primary" type="submit">جستجو</button></div>
+ </form>
+ <div class="table-responsive"><table class="table table-striped"><thead><tr><th>شماره</th><th>مشتری</th><th>تاریخ</th><th>مبلغ (تومان)</th><th>سفارش</th><th>آخرین پرداخت</th><th></th></tr></thead><tbody>
+ @foreach(var item in Model.Items) { <tr><td>@item.Id</td><td>@item.Customer<br /><span dir="ltr">@item.Email</span></td><td>@item.Created.ToString("yyyy/MM/dd HH:mm")</td><td>@item.Total.ToString("N0")</td><td>@OrderRules.Label(item.Status) @(item.IsRemoved ? "(حذف شده)" : "")</td><td>@(item.PaymentStatus.HasValue ? OrderRules.Label(item.PaymentStatus.Value) : "بدون تلاش پرداخت")</td><td><a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">جزئیات</a></td></tr> }
+ </tbody></table></div>
+ @if(Model.Count == 0) { <p>سفارشی یافت نشد.</p> }
+ <nav aria-label="صفحه‌بندی سفارش‌ها" class="d-flex flex-wrap align-items-center">
+ @if(Model.Page > 1) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page-1)" asp-route-search="@Context.Request.Query["search"]" asp-route-status="@Context.Request.Query["status"]">قبلی</a> }
+ <span class="mx-3">صفحه @Model.Page از @Model.Pages — @Model.Count سفارش</span>
+ @if(Model.Page < Model.Pages) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page+1)" asp-route-search="@Context.Request.Query["search"]" asp-route-status="@Context.Request.Query["status"]">بعدی</a> }
+ </nav>
+ </div></div>
+</section>

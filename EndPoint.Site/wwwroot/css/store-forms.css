@@ -1,0 +1,5 @@
+.store-password { display: flex; gap: .4rem; align-items: stretch; }
+.store-password input { min-width: 0; flex: 1; }
+.store-password-toggle { flex-shrink: 0; font-size: .8rem; }
+.store-password input::-ms-reveal, .store-password input::-ms-clear { display: none; }
+.store-password-toggle:focus-visible { outline: 3px solid #007bff; outline-offset: 2px; }

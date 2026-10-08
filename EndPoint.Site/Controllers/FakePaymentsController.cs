@@ -38,6 +38,6 @@ public class FakePaymentsController(IDataBaseContext context, FakePaymentGateway
             !long.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var userId)) return null;
         return context.Payments.AsNoTracking().SingleOrDefault(x => x.Token == token && x.Gateway == gateway.Name &&
             x.Order.UserId == userId && x.Order.User.isActive && !x.Order.User.IsRemoved &&
-            x.Order.Status == OrderStatus.PendingPayment && x.Status == PaymentStatus.Pending && x.ExpiresAtUtc > DateTime.UtcNow);
+            !x.Order.IsRemoved && x.Order.ExpiresAtUtc > DateTime.UtcNow && x.Order.Status == OrderStatus.PendingPayment && x.Status == PaymentStatus.Pending && x.ExpiresAtUtc > DateTime.UtcNow);
     }
 }

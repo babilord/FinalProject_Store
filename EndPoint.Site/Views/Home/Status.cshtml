@@ -1,0 +1,7 @@
+@model int
+@{ ViewData["Title"] = "خطا"; }
+<main class="main-content dt-sl"><div class="container main-container py-5"><div class="card shadow-sm"><div class="card-body text-center">
+<h1 class="h4">@(Model == 404 ? "صفحه موردنظر یافت نشد" : Model == 403 ? "اجازه دسترسی ندارید" : Model == 400 ? "درخواست معتبر نیست" : "انجام درخواست ممکن نشد")</h1>
+<p>لطفاً نشانی را بررسی کنید یا دوباره تلاش کنید.</p>
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">بازگشت به خانه</a>
+</div></div></div></main>

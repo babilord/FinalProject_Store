@@ -73,7 +73,7 @@
                                                             <td>@item.Email</td>
                                                             <td>
                                                                 <button class="btn btn-info"
-                                                                        onclick="ShowModalEdituser('@item.Id', '@item.FullName', '@item.Email')">
+                                                                        data-user-id="@item.Id" data-full-name="@item.FullName" data-email="@item.Email" onclick="ShowModalEdituser(this.dataset.userId, this.dataset.fullName, this.dataset.email)">
                                                                     ویرایش
                                                                 </button>
 

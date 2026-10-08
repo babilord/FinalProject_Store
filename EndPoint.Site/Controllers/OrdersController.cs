@@ -60,7 +60,15 @@ public class OrdersController : Controller
     }
 
     [HttpGet]
-    public IActionResult Index() => View(_orderService.GetMyOrders(CurrentUserId()).Data);
+    public IActionResult Index(int page = 1) => View(_orderService.GetMyOrders(CurrentUserId(), page).Data);
+
+    [HttpPost, ValidateAntiForgeryToken]
+    public IActionResult Cancel(long id, [FromServices] IOrderLifecycleService lifecycle)
+    {
+        var result = lifecycle.Cancel(CurrentUserId(), id);
+        TempData["PaymentMessage"] = result.Message;
+        return RedirectToAction(nameof(Details), new { id });
+    }
 
     private long CurrentUserId() => long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 }

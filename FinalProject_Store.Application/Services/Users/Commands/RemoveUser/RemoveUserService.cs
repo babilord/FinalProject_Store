@@ -32,12 +32,12 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RemoveUser
                     Message = "کاربر با موفقیت حذف شد"
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ResultDto()
                 {
                     IsSuccess = false,
-                    Message = $"خطا در حذف کاربر: {ex.Message}"
+                    Message = $"خطا در حذف کاربر. لطفاً دوباره تلاش کنید."
                 };
             }
         }

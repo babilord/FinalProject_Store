@@ -44,12 +44,12 @@ namespace FinalProject_Store.Application.Services.Users.Commands.UserStatusChang
                     Message = $"وضعیت کاربر با موفقیت به {(user.isActive ? "فعال" : "غیرفعال")} تغییر یافت."
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ResultDto()
                 {
                     IsSuccess = false,
-                    Message = $"خطا در تغییر وضعیت کاربر: {ex.Message}"
+                    Message = $"خطا در تغییر وضعیت کاربر. لطفاً دوباره تلاش کنید."
                 };
             }
         }

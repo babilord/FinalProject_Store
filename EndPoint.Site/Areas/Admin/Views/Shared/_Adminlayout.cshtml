@@ -12,6 +12,9 @@
 
 <!-- Mirrored from pixinvent.com/demo/convex-bootstrap-admin-dashboard-template/demo-1/grids.html by HTTrack Website Copier/3.x [XR&CO'2014], Thu, 20 Sep 2018 14:54:38 GMT -->
 <head>
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+    <meta name="request-verification-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+    <link rel="stylesheet" href="~/css/store-forms.css" asp-append-version="true" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -52,6 +55,8 @@
             <div class="sidebar-content">
                 <div class="nav-container">
                     <ul id="main-menu-navigation" data-menu="menu-navigation" class="navigation navigation-main">
+                        <li><a asp-area="Admin" asp-controller="Orders" asp-action="Index">مدیریت سفارش‌ها</a></li>
+                        <li><a asp-area="Admin" asp-controller="Payments" asp-action="Index">تاریخچه پرداخت‌ها</a></li>
                         <li id="usersMenu"
                             class="has-sub nav-item">
 
@@ -493,6 +498,7 @@
         });
     </script>
 
+    <script src="~/js/store-forms.js" asp-append-version="true"></script>
     @RenderSection("Scripts", false)
 
     @RenderSection("Modals", false)

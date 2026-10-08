@@ -32,12 +32,12 @@ namespace FinalProject_Store.Application.Services.Categories.Commands
                 };
             }
 
-            if (name.Length < 2)
+            if (name.Length < 2 || name.Length > 200)
             {
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "نام دسته‌بندی باید حداقل دو کاراکتر باشد."
+                    Message = "نام دسته‌بندی باید بین ۲ تا ۲۰۰ کاراکتر باشد."
                 };
             }
 

@@ -29,6 +29,7 @@ namespace EndPoint.Site.Areas.Admin.Models.Products
         [Range(0, int.MaxValue, ErrorMessage = "موجودی محصول نمی‌تواند منفی باشد.")]
         [Display(Name = "موجودی")]
         public int Inventory { get; set; }
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
         [Range(1, long.MaxValue, ErrorMessage = "دسته‌بندی محصول را انتخاب کنید.")]
         [Display(Name = "دسته‌بندی")]
