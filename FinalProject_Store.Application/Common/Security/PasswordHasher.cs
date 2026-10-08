@@ -63,13 +63,20 @@ namespace FinalProject_Store.Application.Common.Security
                     return false;
                 }
 
-                if (!int.TryParse(parts[2], out int iterations))
+                if (!int.TryParse(parts[2], out int iterations) || iterations <= 0)
                 {
                     return false;
                 }
 
                 byte[] salt = Convert.FromBase64String(parts[3]);
                 byte[] expectedHash = Convert.FromBase64String(parts[4]);
+
+                // Reject malformed hashes before deriving a key. An empty digest would
+                // otherwise compare equal to an empty derived key for every password.
+                if (salt.Length != SaltSize || expectedHash.Length != KeySize)
+                {
+                    return false;
+                }
 
                 byte[] actualHash = Rfc2898DeriveBytes.Pbkdf2(
                     password: providedPassword,

@@ -37,6 +37,7 @@ public class OrderService : IOrderService
     public ResultDto<long> Create(long userId, CreateOrderDto request)
     {
         if (userId <= 0 || !_context.Users.Any(x => x.Id == userId && x.isActive)) return Fail<long>("کاربر معتبر نیست.");
+        if (request == null) return Fail<long>("اطلاعات سفارش معتبر نیست.");
         var validation = new List<ValidationResult>();
         if (!Validator.TryValidateObject(request, new ValidationContext(request), validation, true))
             return Fail<long>(validation.First().ErrorMessage!);
