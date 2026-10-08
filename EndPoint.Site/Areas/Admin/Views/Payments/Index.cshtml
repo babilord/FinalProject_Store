@@ -1,0 +1,25 @@
+@using FinalProject_Store.Application.Services.Orders
+@using FinalProject_Store.Domain.Entities.Payments
+@model PageResult<AdminPaymentRow>
+@inject EndPoint.Site.Services.OrderDisplayTime OrderDisplayTime
+@{ Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml"; ViewData["Title"] = "تاریخچه پرداخت‌ها"; }
+<section class="container-fluid" dir="rtl">
+ <h1 class="h4">تاریخچه پرداخت‌ها</h1><p>اطلاعات پرداخت فقط قابل مشاهده است.</p>
+ <div class="card"><div class="card-body">
+ <form method="get" class="row align-items-end">
+ <div class="col-md-4 form-group"><label for="search">شماره سفارش، پیگیری یا درگاه</label><input id="search" name="search" value="@Context.Request.Query["search"]" class="form-control" maxlength="200" /></div>
+ <div class="col-md-3 form-group"><label for="orderId">شماره سفارش</label><input id="orderId" type="number" min="1" name="orderId" value="@Context.Request.Query["orderId"]" class="form-control" /></div>
+ <div class="col-md-3 form-group"><label for="status">وضعیت</label><select id="status" name="status" class="form-control"><option value="">همه</option>@foreach(var status in Enum.GetValues<PaymentStatus>()) { <option value="@status" selected="@(Context.Request.Query["status"] == status.ToString())">@OrderRules.Label(status)</option> }</select></div>
+ <div class="col-md-2 form-group"><button class="btn btn-primary" type="submit">جستجو</button></div>
+ </form>
+ <div class="table-responsive"><table class="table table-striped"><thead><tr><th>تلاش</th><th>سفارش</th><th>مبلغ (تومان)</th><th>درگاه</th><th>وضعیت</th><th>پیگیری</th><th>ایجاد</th><th>آخرین تغییر / تکمیل</th><th>انقضا (به وقت محلی ایران)</th></tr></thead><tbody>
+ @foreach(var item in Model.Items) { <tr><td>@item.Id</td><td><a asp-controller="Orders" asp-action="Details" asp-route-id="@item.OrderId">@item.OrderId</a></td><td>@item.Amount.ToString("N0")</td><td>@item.Gateway</td><td>@OrderRules.Label(item.Status)</td><td dir="ltr" class="text-break">@(item.Reference ?? "—")</td><td>@item.Created.ToString("yyyy/MM/dd HH:mm")</td><td>@item.Updated?.ToString("yyyy/MM/dd HH:mm")</td><td>@OrderDisplayTime.FromUtc(item.ExpiresAtUtc).ToString("yyyy/MM/dd HH:mm")</td></tr> }
+ </tbody></table></div>
+ @if(Model.Count == 0) { <p>پرداختی یافت نشد.</p> }
+ <nav aria-label="صفحه‌بندی پرداخت‌ها" class="d-flex flex-wrap align-items-center">
+ @if(Model.Page > 1) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page-1)" asp-route-search="@Context.Request.Query["search"]" asp-route-status="@Context.Request.Query["status"]" asp-route-orderId="@Context.Request.Query["orderId"]">قبلی</a> }
+ <span class="mx-3">صفحه @Model.Page از @Model.Pages — @Model.Count تلاش</span>
+ @if(Model.Page < Model.Pages) { <a class="btn btn-outline-secondary" asp-route-page="@(Model.Page+1)" asp-route-search="@Context.Request.Query["search"]" asp-route-status="@Context.Request.Query["status"]" asp-route-orderId="@Context.Request.Query["orderId"]">بعدی</a> }
+ </nav>
+ </div></div>
+</section>

@@ -137,7 +137,7 @@ namespace EndPoint.Site.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync(
@@ -148,6 +148,7 @@ namespace EndPoint.Site.Controllers
         [HttpGet]
         public IActionResult AccessDenied()
         {
+            Response.StatusCode = 403;
             return View();
         }
     }

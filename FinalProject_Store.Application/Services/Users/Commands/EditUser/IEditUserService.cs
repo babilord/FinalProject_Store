@@ -50,6 +50,10 @@ namespace FinalProject_Store.Application.Services.Users.Commands.EditUser
                     };
                 }
 
+                if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(request.Email.Trim()) || request.Email.Trim().Length > 200 || request.FullName.Trim().Length > 200)
+                    return new ResultDto { IsSuccess = false, Message = "نام یا ایمیل معتبر نیست." };
+                request.Email = request.Email.Trim().ToLowerInvariant();
+                request.FullName = request.FullName.Trim();
                 var isEmailExists = _context.Users
                     .Any(p => p.Email == request.Email && p.Id != request.UserId);
 
@@ -74,12 +78,12 @@ namespace FinalProject_Store.Application.Services.Users.Commands.EditUser
                     Message = "ویرایش کاربر با موفقیت انجام شد"
                 };
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return new ResultDto()
                 {
                     IsSuccess = false,
-                    Message = $"خطا در ویرایش کاربر: {ex.Message}"
+                    Message = $"خطا در ویرایش کاربر. لطفاً دوباره تلاش کنید."
                 };
             }
         }

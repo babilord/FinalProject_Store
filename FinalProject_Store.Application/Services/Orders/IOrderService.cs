@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.Extensions.Logging;
 using FinalProject_Store.Application.Interfaces.Contexts;
 using FinalProject_Store.Common.Dto;
 using FinalProject_Store.Domain.Entities.Orders;
@@ -12,13 +13,14 @@ public interface IOrderService
     ResultDto<CheckoutDto> GetCheckout(long userId);
     ResultDto<long> Create(long userId, CreateOrderDto request);
     ResultDto<OrderDetailsDto> GetDetails(long userId, long orderId);
-    ResultDto<List<OrderListItemDto>> GetMyOrders(long userId);
+    ResultDto<PageResult<OrderListItemDto>> GetMyOrders(long userId, int page = 1);
 }
 
 public class OrderService : IOrderService
 {
     private readonly IDataBaseContext _context;
-    public OrderService(IDataBaseContext context) => _context = context;
+    private readonly ILogger<OrderService> _logger;
+    public OrderService(IDataBaseContext context, ILogger<OrderService> logger) { _context = context; _logger = logger; }
 
     public ResultDto<CheckoutDto> GetCheckout(long userId)
     {
@@ -34,11 +36,14 @@ public class OrderService : IOrderService
 
     public ResultDto<long> Create(long userId, CreateOrderDto request)
     {
-        if (userId <= 0) return Fail<long>("کاربر معتبر نیست.");
+        if (userId <= 0 || !_context.Users.Any(x => x.Id == userId && x.isActive)) return Fail<long>("کاربر معتبر نیست.");
+        var validation = new List<ValidationResult>();
+        if (!Validator.TryValidateObject(request, new ValidationContext(request), validation, true))
+            return Fail<long>(validation.First().ErrorMessage!);
 
-        using var transaction = _context.BeginTransaction(IsolationLevel.Serializable);
         try
         {
+            using var transaction = _context.BeginTransaction(IsolationLevel.Serializable);
             var cart = LoadCart(userId, true);
             if (cart == null || cart.Items.Count == 0)
                 return Rollback(transaction, "سبد خرید شما خالی است.");
@@ -50,6 +55,7 @@ public class OrderService : IOrderService
             {
                 UserId = userId,
                 Status = OrderStatus.PendingPayment,
+                ExpiresAtUtc = DateTime.UtcNow.AddMinutes(30),
                 FullName = request.FullName.Trim(),
                 MobileNumber = request.MobileNumber.Trim(),
                 Province = request.Province.Trim(),
@@ -59,7 +65,7 @@ public class OrderService : IOrderService
                 Notes = string.IsNullOrWhiteSpace(request.Notes) ? null : request.Notes.Trim()
             };
 
-            foreach (var cartItem in cart.Items)
+            foreach (var cartItem in cart.Items.OrderBy(x => x.ProductId))
             {
                 var lineTotal = cartItem.Product.Price * cartItem.Quantity;
                 order.Items.Add(new OrderItem
@@ -81,9 +87,10 @@ public class OrderService : IOrderService
             transaction.Commit();
             return Ok(order.Id, "سفارش شما با موفقیت ثبت شد.");
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            transaction.Rollback();
+            _context.ClearTracking();
+            _logger.LogError(ex, "Order creation/inventory conflict for user {UserId}", userId);
             return Fail<long>("ثبت سفارش به دلیل تغییر هم‌زمان موجودی انجام نشد. سبد خرید شما حفظ شده است؛ دوباره تلاش کنید.");
         }
     }
@@ -99,7 +106,7 @@ public class OrderService : IOrderService
             Id = order.Id, InsertTime = order.InsertTime, Status = order.Status, Total = order.Total,
             FullName = order.FullName, MobileNumber = order.MobileNumber, Province = order.Province,
             City = order.City, PostalAddress = order.PostalAddress, PostalCode = order.PostalCode,
-            Notes = order.Notes,
+            Notes = order.Notes, ExpiresAtUtc = order.ExpiresAtUtc, ReservationExpired = order.ReservationExpired,
             LastPaymentStatus = order.Payments.OrderByDescending(x => x.Id).Select(x => (FinalProject_Store.Domain.Entities.Payments.PaymentStatus?)x.Status).FirstOrDefault(),
             PaymentReference = order.Payments.FirstOrDefault(x => x.Status == FinalProject_Store.Domain.Entities.Payments.PaymentStatus.Succeeded)?.ReferenceId,
             Items = order.Items.OrderBy(x => x.Id).Select(x => new OrderItemDto
@@ -110,10 +117,16 @@ public class OrderService : IOrderService
         });
     }
 
-    public ResultDto<List<OrderListItemDto>> GetMyOrders(long userId) => Ok(
-        _context.Orders.AsNoTracking().Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.InsertTime).Select(x => new OrderListItemDto
-            { Id = x.Id, InsertTime = x.InsertTime, Total = x.Total, Status = x.Status }).ToList());
+    public ResultDto<PageResult<OrderListItemDto>> GetMyOrders(long userId, int page = 1)
+    {
+        var query = _context.Orders.AsNoTracking().Where(x => x.UserId == userId);
+        var count = query.Count();
+        var pages = Math.Max(1, (int)Math.Ceiling(count / 20d));
+        page = Math.Clamp(page, 1, pages);
+        return Ok(new PageResult<OrderListItemDto> { Page = page, Pages = pages, Count = count,
+            Items = query.OrderByDescending(x => x.Id).Skip((page - 1) * 20).Take(20)
+                .Select(x => new OrderListItemDto { Id = x.Id, InsertTime = x.InsertTime, Total = x.Total, Status = x.Status }).ToList() });
+    }
 
     private Domain.Entities.Carts.Cart? LoadCart(long userId, bool tracking) =>
         (tracking ? _context.Carts.IgnoreQueryFilters() : _context.Carts.IgnoreQueryFilters().AsNoTracking())
@@ -126,6 +139,7 @@ public class OrderService : IOrderService
         {
             if (item.Product == null || item.Product.IsRemoved)
                 return "یکی از کالاهای سبد خرید دیگر موجود نیست. لطفاً سبد خرید را بررسی کنید.";
+            if (item.Product.Price <= 0) return "قیمت کالا معتبر نیست.";
             if (!item.Product.IsActive)
                 return $"کالای «{item.Product.Name}» غیرفعال شده است.";
             if (item.Product.Inventory <= 0)
@@ -190,5 +204,5 @@ public class CreateOrderDto : IValidatableObject
 public class CheckoutDto { public List<CheckoutItemDto> Items { get; set; } = new(); public decimal Total => Items.Sum(x => x.LineTotal); }
 public class CheckoutItemDto { public long ProductId { get; set; } public string ProductName { get; set; } = ""; public bool HasImage { get; set; } public decimal UnitPrice { get; set; } public int Quantity { get; set; } public decimal LineTotal => UnitPrice * Quantity; }
 public class OrderItemDto : CheckoutItemDto { public new decimal LineTotal { get; set; } }
-public class OrderDetailsDto : CreateOrderDto { public FinalProject_Store.Domain.Entities.Payments.PaymentStatus? LastPaymentStatus { get; set; } public string? PaymentReference { get; set; } public long Id { get; set; } public DateTime InsertTime { get; set; } public OrderStatus Status { get; set; } public decimal Total { get; set; } public List<OrderItemDto> Items { get; set; } = new(); }
+public class OrderDetailsDto : CreateOrderDto { public DateTime ExpiresAtUtc { get; set; } public bool ReservationExpired { get; set; } public bool CanPay => Status == OrderStatus.PendingPayment && ExpiresAtUtc > DateTime.UtcNow; public FinalProject_Store.Domain.Entities.Payments.PaymentStatus? LastPaymentStatus { get; set; } public string? PaymentReference { get; set; } public long Id { get; set; } public DateTime InsertTime { get; set; } public OrderStatus Status { get; set; } public decimal Total { get; set; } public List<OrderItemDto> Items { get; set; } = new(); }
 public class OrderListItemDto { public long Id { get; set; } public DateTime InsertTime { get; set; } public decimal Total { get; set; } public OrderStatus Status { get; set; } }

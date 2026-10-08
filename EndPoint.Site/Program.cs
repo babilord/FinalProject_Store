@@ -35,7 +35,12 @@ using FinalProject_Store.Infrastructures.Payments;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options => options.Filters.Add(new Microsoft.AspNetCore.Mvc.AutoValidateAntiforgeryTokenAttribute()));
+builder.Services.AddScoped<EndPoint.Site.Services.StoreCookieEvents>();
+builder.Services.AddScoped<IOrderLifecycleService, OrderLifecycleService>();
+builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
+builder.Services.AddSingleton<EndPoint.Site.Services.OrderDisplayTime>();
+builder.Services.AddHostedService<EndPoint.Site.Services.OrderExpirationWorker>();
 // Authentication part
 builder.Services.AddAuthentication(options =>
 {
@@ -45,6 +50,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddCookie(options =>
 {
+    options.EventsType = typeof(EndPoint.Site.Services.StoreCookieEvents);
     options.LoginPath = "/Authentication/Login";
     options.LogoutPath = "/Authentication/Logout";
     options.AccessDeniedPath =
@@ -116,6 +122,7 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+app.UseStatusCodePagesWithReExecute("/Home/Status", "?code={0}");
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseAuthentication();

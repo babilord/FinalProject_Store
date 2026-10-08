@@ -2,6 +2,9 @@
 <html lang="fa" dir="rtl">
 
 <head>
+    @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+    <meta name="request-verification-token" content="@Antiforgery.GetAndStoreTokens(Context).RequestToken" />
+    <link rel="stylesheet" href="~/css/store-forms.css" asp-append-version="true" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>فروشگاه اینترنتی کالا مارکت</title>
@@ -169,10 +172,7 @@
                                                     </li>
 
                                                     <li class="account-item">
-                                                        <a href="/Authentication/Logout"
-                                                           class="account-link">
-                                                            خروج
-                                                        </a>
+                                                        <form asp-controller="Authentication" asp-action="Logout" method="post"><button type="submit" class="btn btn-link">خروج از حساب کاربری</button></form>
                                                     </li>
                                                 }
                                                 else
@@ -1466,6 +1466,7 @@
 <script src="~/site template/assets/js/vendor/sweetalert2.all.min.js"></script>
 <!-- main js---------------------------------------------------->
 <script src="~/site template/assets/js/main.js"></script>
+<script src="~/js/store-forms.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 
 </body>

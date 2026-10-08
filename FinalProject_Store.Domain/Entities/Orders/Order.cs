@@ -8,6 +8,8 @@ public class Order : BaseEntity
     public long UserId { get; set; }
     public User User { get; set; } = null!;
     public OrderStatus Status { get; set; } = OrderStatus.PendingPayment;
+    public DateTime ExpiresAtUtc { get; set; }
+    public bool ReservationExpired { get; set; }
     public decimal Total { get; set; }
     public string FullName { get; set; } = string.Empty;
     public string MobileNumber { get; set; } = string.Empty;

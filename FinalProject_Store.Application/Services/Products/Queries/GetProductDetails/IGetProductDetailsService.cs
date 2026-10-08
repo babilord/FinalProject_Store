@@ -19,7 +19,7 @@ namespace FinalProject_Store.Application.Services.Products.Queries.GetProductDet
                 {
                     Id = item.Id, Name = item.Name, Brand = item.Brand,
                     Description = item.Description, Price = item.Price,
-                    Inventory = item.Inventory, CategoryId = item.CategoryId,
+                    Inventory = item.Inventory, RowVersion = item.RowVersion, CategoryId = item.CategoryId,
                     ImageSrc = item.ImageSrc,
                     IsActive = item.IsActive
                 }).FirstOrDefault();
@@ -41,6 +41,7 @@ namespace FinalProject_Store.Application.Services.Products.Queries.GetProductDet
         public string Description { get; set; }
         public decimal Price { get; set; }
         public int Inventory { get; set; }
+        public byte[] RowVersion { get; set; } = Array.Empty<byte>();
         public long CategoryId { get; set; }
         public bool IsActive { get; set; }
         public string ImageSrc { get; set; } = string.Empty;

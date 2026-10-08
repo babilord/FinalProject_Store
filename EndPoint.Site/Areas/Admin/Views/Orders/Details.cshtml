@@ -1,0 +1,28 @@
+@using FinalProject_Store.Application.Services.Orders
+@using FinalProject_Store.Domain.Entities.Orders
+@model AdminOrderDetails
+@inject EndPoint.Site.Services.OrderDisplayTime OrderDisplayTime
+@{ Layout = "~/Areas/Admin/Views/Shared/_Adminlayout.cshtml"; ViewData["Title"] = "جزئیات سفارش"; var order = Model.Order; }
+<section class="container-fluid" dir="rtl">
+ <h1 class="h4">سفارش @order.Id</h1>
+ @if(TempData["OrderMessage"] is string message) { <div class="alert alert-info">@message</div> }
+ <div class="card"><div class="card-body">
+ <p>مشتری: @Model.Customer — <span dir="ltr">@Model.Email</span> — شناسه @order.UserId</p>
+ <p>تاریخ سفارش: @order.InsertTime.ToString("yyyy/MM/dd HH:mm") — وضعیت: @OrderRules.Label(order.Status)</p>
+ @if(order.ExpiresAtUtc != DateTime.MinValue) { <p>مهلت پرداخت (به وقت محلی ایران): <span dir="ltr">@OrderDisplayTime.FromUtc(order.ExpiresAtUtc).ToString("yyyy/MM/dd HH:mm")</span></p> }
+ @if(order.ReservationExpired) { <p>رزرو منقضی و موجودی آزاد شده است.</p> }
+ <p>مبلغ کل: @order.Total.ToString("N0") تومان</p>
+ <p>شماره پیگیری پرداخت موفق: <span dir="ltr" class="text-break">@(Model.Reference ?? "—")</span></p>
+ <a asp-controller="Payments" asp-action="Index" asp-route-orderId="@order.Id" class="btn btn-outline-info">تاریخچه پرداخت‌ها</a>
+ <hr /><h2 class="h5">اطلاعات ارسال ثبت‌شده</h2>
+ <p>@order.FullName — <span dir="ltr">@order.MobileNumber</span></p>
+ <p>@order.Province، @order.City، @order.PostalAddress</p><p>کد پستی: @order.PostalCode</p><p>@order.Notes</p>
+ <div class="table-responsive"><table class="table"><thead><tr><th>کالا</th><th>تعداد</th><th>قیمت واحد (تومان)</th><th>جمع (تومان)</th></tr></thead><tbody>
+ @foreach(var item in order.Items) { <tr><td>@item.ProductName</td><td>@item.Quantity</td><td>@item.UnitPrice.ToString("N0")</td><td>@item.LineTotal.ToString("N0")</td></tr> }
+ </tbody></table></div>
+ @foreach(var target in Enum.GetValues<OrderStatus>().Where(s => !order.IsRemoved && OrderRules.CanAdvance(order.Status, s))) {
+ <form asp-action="Advance" method="post"><input type="hidden" name="id" value="@order.Id" /><input type="hidden" name="target" value="@target" /><button type="submit" class="btn btn-success">تغییر به «@OrderRules.Label(target)»</button></form>
+ }
+ <a asp-action="Index" class="btn btn-secondary mt-3">بازگشت</a>
+ </div></div>
+</section>

@@ -73,11 +73,11 @@ namespace FinalProject_Store.Application.Services.Carts
                 _context.Carts.Add(cart);
             }
             var item = cart.Items.SingleOrDefault(x => x.ProductId == productId);
-            var requestedQuantity = quantity + (item?.Quantity ?? 0);
+            var requestedQuantity = (long)quantity + (item?.Quantity ?? 0);
             if (requestedQuantity > product.Inventory)
                 return Failure($"حداکثر تعداد قابل سفارش از این کالا {product.Inventory} عدد است.");
             if (item == null) cart.Items.Add(new CartItem { ProductId = productId, Quantity = quantity });
-            else { item.Quantity = requestedQuantity; item.UpdateDate = DateTime.Now; }
+            else { item.Quantity = (int)requestedQuantity; item.UpdateDate = DateTime.Now; }
             _context.SaveChanges();
             return Success("کالا با موفقیت به سبد خرید افزوده شد.");
         }

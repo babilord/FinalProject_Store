@@ -1,7 +1,6 @@
-﻿using FinalProject_Store.Application.Interfaces.Security;
-using FinalProject_Store.Application.Interfaces.Contexts;
-using FinalProject_Store.Common.Dto;
-using FinalProject_Store.Domain.Entities.Users;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using FinalProject_Store.Application.Interfaces.Security;
 using FinalProject_Store.Application.Interfaces.Contexts;
 using FinalProject_Store.Common.Dto;
 using FinalProject_Store.Domain.Entities.Users;
@@ -83,9 +82,11 @@ namespace FinalProject_Store.Application.Services.Users.Commands.RegisterUser
                     };
                 }
 
-                var normalizedEmail = request.Email.Trim().ToLower();
+                if (!new EmailAddressAttribute().IsValid(request.Email.Trim()) || request.Email.Trim().Length > 200 || request.FullName.Trim().Length > 200 || request.Password.Length < 8 || request.Password.Length > 128)
+                    return new ResultDto<ResultRegisterUserDto> { IsSuccess = false, Message = "ایمیل معتبر، نام حداکثر ۲۰۰ حرف و رمز عبور بین ۸ تا ۱۲۸ حرف وارد کنید." };
+                var normalizedEmail = request.Email.Trim().ToLowerInvariant();
 
-                var userExists = _context.Users.Any(
+                var userExists = _context.Users.IgnoreQueryFilters().Any(
                     p => p.Email.ToLower() == normalizedEmail);
 
                 if (userExists)

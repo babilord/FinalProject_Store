@@ -69,12 +69,12 @@ namespace FinalProject_Store.Application.Services.Products.Commands.AddProduct
                 return new ResultDto { IsSuccess = false, Message = "توضیحات نمی‌تواند بیشتر از ۴۰۰۰ کاراکتر باشد." };
             }
 
-            if (request.Price <= 0)
+            if (request.Price <= 0 || request.Price > 9999999999999999.99m || decimal.Round(request.Price, 2) != request.Price)
             {
                 return new ResultDto
                 {
                     IsSuccess = false,
-                    Message = "قیمت محصول باید بیشتر از صفر باشد."
+                    Message = "قیمت باید مثبت، حداکثر ۱۶ رقم و دارای حداکثر دو رقم اعشار باشد."
                 };
             }
 

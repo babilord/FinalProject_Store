@@ -7,7 +7,7 @@
     <div class="card-header"><h4 class="card-title">ویرایش محصول</h4></div>
     <div class="card-body">
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
-            @Html.AntiForgeryToken()<input asp-for="Id" type="hidden" />
+            @Html.AntiForgeryToken()<input asp-for="Id" type="hidden" /><input asp-for="RowVersion" type="hidden" />
             <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             <div class="row">
                 <div class="col-md-6"><div class="form-group mb-3"><label asp-for="Name"></label><input asp-for="Name" class="form-control" /><span asp-validation-for="Name" class="text-danger"></span></div></div>
@@ -26,7 +26,7 @@
                 {
                     <div class="col-md-6"><div class="form-group mb-3">
                         <label>تصویر فعلی</label>
-                        <div><img asp-area="" asp-controller="Products" asp-action="Image" asp-route-id="@Model.Id"
+                        <div><img src="@Url.Action("Image", "Products", new { area = "", id = Model.Id })"
                                   alt="@Model.Name" class="img-thumbnail" style="max-width:220px;max-height:220px;object-fit:contain" /></div>
                     </div></div>
                 }

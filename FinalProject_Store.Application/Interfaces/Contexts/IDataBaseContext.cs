@@ -29,6 +29,9 @@ namespace FinalProject_Store.Application.Interfaces.Contexts
         DbSet<OrderItem> OrderItems { get; set; }
 
         IDbContextTransaction BeginTransaction(IsolationLevel isolationLevel);
+        // Must be called inside a transaction, before reading/changing an existing order.
+        void LockOrder(long orderId);
+        void ClearTracking();
 
         int SaveChanges();
 
