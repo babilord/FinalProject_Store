@@ -3,6 +3,10 @@ obj/
 .vs/
 *.user
 *.suo
+.test-packages/
+.nuget/
+Tests/Store.Regression/*.log
+TestResults/
 .env
 .env.*
 !.env.example

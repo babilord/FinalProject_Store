@@ -14,6 +14,11 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 
+public class ExistingRegressionTests
+{
+[Xunit.Fact]
+public async Task ExistingLifecycleChecks()
+{
 var passed = 0;
 void Check(bool condition, string name)
 {
@@ -126,7 +131,10 @@ using (var modelContext = new DataBaseContext(new DbContextOptionsBuilder<DataBa
     Check(model.FindEntityType(typeof(Order))!.GetIndexes().Any(x => x.Properties.Select(p => p.Name).SequenceEqual(new[] { "Status", "ExpiresAtUtc" })), "expiration scan index mapped");
     Check(model.FindEntityType(typeof(Payment))!.GetIndexes().Count(x => x.IsUnique && x.GetFilter() != null) == 2, "unique pending/successful payment guards preserved");
 }
-Console.WriteLine($"{passed} checks passed. No database was opened or migrated. SQL races and browser rendering require the documented integration tests.");
+Console.WriteLine($"{passed} legacy checks passed. No database was opened or migrated. See README.md for verification limits.");
+
+}
+}
 
 internal sealed class TestEnvironment : IHostEnvironment
 {
