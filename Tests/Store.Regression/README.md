@@ -3,12 +3,14 @@
 Run from the repository root:
 
 ```powershell
-dotnet restore FinalProject_Store.sln
-dotnet build FinalProject_Store.sln --no-restore -c Release
-dotnet test FinalProject_Store.sln --no-build --no-restore -c Release --logger "trx;LogFileName=regression.trx" --results-directory Tests/Store.Regression/TestResults
+dotnet restore Tests/Store.Regression/Store.Regression.csproj
+dotnet build Tests/Store.Regression/Store.Regression.csproj --no-restore -c Release
+dotnet test Tests/Store.Regression/Store.Regression.csproj --no-build --no-restore -c Release --logger "trx;LogFileName=regression.trx" --results-directory Tests/Store.Regression/TestResults
 ```
 
-The previous console runner is now a discoverable xUnit test containing its original 32 assertions. The other tests report individually, including theory cases. No test starts the production application, loads its configuration or credentials, opens a database, runs migrations, or contacts MinIO. Each service test has its own data and ephemeral payment-protection keys.
+The previous console runner is now a discoverable xUnit test containing its original 32 assertions. The other tests report individually, including theory cases. No test in this regression project starts the production application, loads its configuration or credentials, opens a database, runs migrations, or contacts MinIO. Each service test has its own data and ephemeral payment-protection keys.
+
+The solution also includes a separate [real SQL Server integration suite](../Store.SqlIntegration/README.md), verified on 2026-10-09: 7 passed, 0 failed, 0 skipped. Running `dotnet test FinalProject_Store.sln` now includes that suite and creates/migrates only its guarded `FinalProject_Store_IntegrationTests` database. The historical database limitations below describe this regression project and its earlier verification, not the new integration suite.
 
 On this machine network restore was unavailable. The successful offline restore command was:
 
