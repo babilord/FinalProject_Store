@@ -10,3 +10,9 @@ TestResults/
 .env
 .env.*
 !.env.example
+.npm-cache/
+node_modules/
+Tests/*.log
+Tests/Store.Browser/.runtime/
+Tests/Store.Browser/test-results/
+Tests/Store.Browser/playwright-report/

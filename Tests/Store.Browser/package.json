@@ -1,0 +1,8 @@
+{
+  "name": "store-browser-tests",
+  "private": true,
+  "scripts": { "test": "powershell -NoProfile -ExecutionPolicy Bypass -File ./run.ps1" },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  }
+}

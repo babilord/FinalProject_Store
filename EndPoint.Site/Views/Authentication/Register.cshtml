@@ -11,23 +11,23 @@
                     <h3 class="text-center mb-4">ثبت نام</h3>
 
                     <div class="form-group">
-                        <label>نام و نام خانوادگی</label>
-                        <input type="text" id="FullName" class="form-control" placeholder="نام و نام خانوادگی" />
+                        <label for="FullName">نام و نام خانوادگی</label>
+                        <input type="text" id="FullName" class="form-control" autocomplete="name" placeholder="نام و نام خانوادگی" />
                     </div>
 
                     <div class="form-group">
-                        <label>ایمیل</label>
-                        <input type="text" id="Email" class="form-control" placeholder="example@email.com" />
+                        <label for="Email">ایمیل</label>
+                        <input type="email" id="Email" class="form-control" autocomplete="email" dir="ltr" placeholder="example@email.com" />
                     </div>
 
                     <div class="form-group">
-                        <label>رمز عبور</label>
-                        <input type="password" id="Password" class="form-control" placeholder="رمز عبور" />
+                        <label for="Password">رمز عبور</label>
+                        <input type="password" id="Password" class="form-control" autocomplete="new-password" placeholder="رمز عبور" />
                     </div>
 
                     <div class="form-group">
-                        <label>تکرار رمز عبور</label>
-                        <input type="password" id="RePassword" class="form-control" placeholder="تکرار رمز عبور" />
+                        <label for="RePassword">تکرار رمز عبور</label>
+                        <input type="password" id="RePassword" class="form-control" autocomplete="new-password" placeholder="تکرار رمز عبور" />
                     </div>
 
                     <button class="btn btn-success btn-block mt-3" onclick="RegisterUser()">

@@ -26,6 +26,7 @@ namespace FinalProject_Store.Application.Services.Users.Queries.GetUsers
             int rowsCount = 0;
 
             var usersList = users
+                .OrderBy(p => p.Id)
                 .ToPaged(request.Page, 20, out rowsCount)
                 .Select(p => new GetUsersDto
                 {

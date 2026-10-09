@@ -3,3 +3,10 @@
 .store-password-toggle { flex-shrink: 0; font-size: .8rem; }
 .store-password input::-ms-reveal, .store-password input::-ms-clear { display: none; }
 .store-password-toggle:focus-visible { outline: 3px solid #007bff; outline-offset: 2px; }
+.store-category-actions { flex-wrap: wrap; }
+.store-category-actions input { min-width: 0; }
+@media (max-width: 767px) {
+    .store-category-actions > input,
+    .store-category-actions > button,
+    .store-category-actions > a { width: 100% !important; flex-basis: 100% !important; }
+}

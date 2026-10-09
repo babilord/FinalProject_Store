@@ -40,7 +40,7 @@ namespace EndPoint.Site.Areas.Admin.Controllers
         {
             return View(_getUsersService.Execute(new RequestGetUserDto
             {
-                Page = page,
+                Page = Math.Max(1, page),
                 SearchKey = searchkey,
             }));
         }

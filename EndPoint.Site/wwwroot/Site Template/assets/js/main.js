@@ -621,7 +621,9 @@ $(document).ready(function (e) {
     });
 
     var $customEvents = $('#custom-events');
-    $customEvents.lightGallery();
+    if ($customEvents.length && typeof $.fn.lightGallery === 'function') {
+        $customEvents.lightGallery();
+    }
 
     var colours = ['#21171A', '#81575E', '#9C5043', '#8F655D'];
     $customEvents.on('onBeforeSlide.lg', function (event, prevIndex, index) {
